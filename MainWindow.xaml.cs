@@ -1,6 +1,5 @@
-﻿using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Ink;
+﻿using SprayMaster.ViewModels;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SprayMaster
@@ -10,8 +9,6 @@ namespace SprayMaster
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool isDrawing;
-        private Point lastPoint;
         private readonly MainViewModel viewModel;
 
         public MainWindow()
@@ -50,17 +47,5 @@ namespace SprayMaster
         }
         #endregion
 
-        private void btnEraser_Click(object sender, RoutedEventArgs e)
-        {
-            if (btnEraser.IsChecked.Value)
-            {
-                canvasPanel.EditingMode = InkCanvasEditingMode.EraseByPoint;
-                canvasPanel.EraserShape = new EllipseStylusShape(sldEraserSize.Value, sldEraserSize.Value);
-            }
-            else
-            {
-                canvasPanel.EditingMode = InkCanvasEditingMode.Ink;
-            }
-        }
     }
 }

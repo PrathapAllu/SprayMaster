@@ -5,7 +5,6 @@
         public enum ToolType
         {
             Spray,
-            AirBrush,
             Erase
         }
     }
