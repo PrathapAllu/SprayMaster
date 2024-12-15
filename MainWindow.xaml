@@ -71,11 +71,11 @@
         MouseLeftButtonDown="Canvas_MouseDown"
         MouseMove="Canvas_MouseMove" 
         MouseLeftButtonUp="Canvas_MouseUp">
-                            <Image Source="{Binding CurrentImage}" 
-           Canvas.Left="{Binding ImageLeft}"
-           Canvas.Top="{Binding ImageTop}">
+                            <Image Source="{Binding imageService.CurrentImage}" 
+           Canvas.Left="{Binding imageService.ImageLeft}"
+           Canvas.Top="{Binding imageService.ImageTop}">
                                 <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
+                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" ScaleY="{Binding imageService.ZoomLevel}"/>
                                 </Image.LayoutTransform>
                             </Image>
                             <Image x:Name="drawingLayer"/>
@@ -101,8 +101,8 @@
 
                     <GroupBox Header="Color" Margin="5" BorderBrush="Gray">
                         <StackPanel>
-                            <ComboBox ItemsSource="{Binding ToolManager.Colors}" 
-          SelectedValue="{Binding ToolManager.SelectedColor}">
+                            <ComboBox ItemsSource="{Binding toolManager.Colors}" 
+          SelectedValue="{Binding toolManager.SelectedColor}">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal">
@@ -121,15 +121,15 @@
 
                     <!-- Brush Sliders -->
                     <GroupBox Header="Brush Size +/-" Margin="5" BorderBrush="Gray">
-                        <Slider Minimum="5" Maximum="50" Value="{Binding ToolManager.BrushSize}" Margin="5"/>
+                        <Slider Minimum="5" Maximum="50" Value="{Binding toolManager.BrushSize}" Margin="5"/>
                     </GroupBox>
 
                     <GroupBox Header="Spray Density +/-" Margin="5" BorderBrush="Gray">
-                        <Slider Minimum="0" Maximum="100" Value="{Binding ToolManager.Opacity}" Margin="5"/>
+                        <Slider Minimum="0" Maximum="100" Value="{Binding toolManager.Opacity}" Margin="5"/>
                     </GroupBox>
 
                     <GroupBox Header="Zoom +/-" BorderBrush="Gray">
-                        <Slider Minimum="0.1" Maximum="5" Value="{Binding ZoomLevel}" 
+                        <Slider Minimum="0.1" Maximum="5" Value="{Binding imageService.ZoomLevel}" 
                 VerticalAlignment="Bottom" Margin="10" Width="200"/>
                     </GroupBox>
                 </StackPanel>
@@ -140,15 +140,15 @@
                 <StatusBarItem>
                     <TextBlock>
    <Run Text="Image: "/>
-   <Run Text="{Binding ImageName, FallbackValue='None'}"/>
+   <Run Text="{Binding imageService.ImageName, FallbackValue='None'}"/>
    <Run Text=" | Format: "/>
-   <Run Text="{Binding ImageFormat, FallbackValue='--'}"/>
+   <Run Text="{Binding imageService.ImageFormat, FallbackValue='--'}"/>
 <Run Text=" | Size: "/>
 <Run>
    <Run.Text>
        <MultiBinding StringFormat="{}{0}x{1}">
-<Binding Path="ImageWidth" FallbackValue="0"/>
-<Binding Path="ImageHeight" FallbackValue="0"/>
+<Binding Path="imageService.ImageWidth" FallbackValue="0"/>
+<Binding Path="imageService.ImageHeight" FallbackValue="0"/>
        </MultiBinding>
    </Run.Text>
 </Run>

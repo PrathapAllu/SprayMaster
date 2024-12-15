@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SprayMaster
 {
@@ -12,37 +11,12 @@ namespace SprayMaster
         private bool isDrawing;
         private Point lastPoint;
         private readonly MainViewModel viewModel;
-        private DrawingManager drawingManager;
-
 
         public MainWindow()
         {
             InitializeComponent();
             viewModel = new MainViewModel();
-            drawingManager = new DrawingManager();
             DataContext = viewModel;
-            InitializeDrawingLayer();
-        }
-
-        private void InitializeDrawingLayer()
-        {
-            drawingManager.InitializeDrawingLayer(viewModel.ImageWidth, viewModel.ImageHeight);
-            drawingLayer.Source = drawingManager.GetDrawingLayer();
-        }
-
-        private void LoadPredefinedColors()
-        {
-            var colors = new List<SolidColorBrush>
-    {
-        new SolidColorBrush(Colors.Black),
-        new SolidColorBrush(Colors.White),
-        new SolidColorBrush(Colors.Red),
-        new SolidColorBrush(Colors.Green),
-        new SolidColorBrush(Colors.Blue),
-        new SolidColorBrush(Colors.Yellow),
-        new SolidColorBrush(Colors.Purple),
-        new SolidColorBrush(Colors.Orange)
-    };
         }
 
         private void panelControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -72,15 +46,6 @@ namespace SprayMaster
             else this.WindowState = WindowState.Normal;
         }
 
-        public void InitializeDrawingLayer(double width, double height)
-        {
-            if (drawingManager != null && drawingLayer != null)
-            {
-                drawingManager.InitializeDrawingLayer(width, height);
-                drawingLayer.Source = drawingManager.GetDrawingLayer();
-            }
-        }
-
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             Cursor = Cursors.Pen;
@@ -88,7 +53,7 @@ namespace SprayMaster
             {
                 isDrawing = true;
                 lastPoint = e.GetPosition(imageCanvas);
-                drawingManager.StartDrawing(lastPoint);
+                viewModel.drawingManager.StartDrawing(lastPoint);
             }
         }
 
@@ -97,23 +62,22 @@ namespace SprayMaster
             if (isDrawing && e.LeftButton == MouseButtonState.Pressed)
             {
                 var currentPoint = e.GetPosition(imageCanvas);
-                drawingManager.Draw(currentPoint,
-                    viewModel.ToolManager.SelectedColor,
-                    viewModel.ToolManager.BrushSize,
-                    viewModel.ToolManager.Opacity,
-                    viewModel.ToolManager.CurrentTool);
+                viewModel.drawingManager.Draw(currentPoint,
+                    viewModel.toolManager.SelectedColor,
+                    viewModel.toolManager.BrushSize,
+                    viewModel.toolManager.Opacity,
+                    viewModel.toolManager.CurrentTool);
             }
         }
 
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-
             Cursor = Cursors.Arrow;
             if (e.LeftButton == MouseButtonState.Released)
             {
                 isDrawing = false;
-                drawingManager.StopDrawing();
+                viewModel.drawingManager.StopDrawing();
             }
         }
     }

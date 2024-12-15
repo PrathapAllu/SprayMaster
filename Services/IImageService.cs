@@ -1,7 +1,7 @@
 ﻿using SprayMaster.Models;
 using System.Windows.Media.Imaging;
 
-namespace SprayMaster.Interface
+namespace SprayMaster.Services
 {
     public interface IImageService
     {
