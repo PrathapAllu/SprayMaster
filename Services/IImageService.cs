@@ -8,6 +8,6 @@ namespace SprayMaster.Services
         public Task<(BitmapImage Image, double Width, double Height)> LoadAndScaleImage(string path);
         Task SaveImage(string path, BitmapSource image);
         Task SaveImageAsync(string path, BitmapSource image);
-        Task SavePaintDataAsync(string path, PaintData data);
+        Task SavePaintDataAsync(string path);
     }
 }

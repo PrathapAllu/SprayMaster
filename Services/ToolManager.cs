@@ -1,21 +1,30 @@
 ﻿using PropertyChanged;
+using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
 
 [AddINotifyPropertyChangedInterface]
 public class ToolManager
 {
+    public DrawingAttributes DrawingAttributes { get; } = new();
+    public Color SelectedColor
+    {
+        get => DrawingAttributes.Color;
+        set => DrawingAttributes.Color = value;
+    }
     public SolidColorBrush SelectedBrush { get; set; }
-    private readonly List<Color> _colors;
-    public IEnumerable<Color> Colors => _colors;
-    public Color SelectedColor { get; set; }
-    public double BrushSize { get; set; } = 10;
+    public List<Color> Colors { get; set; }
+    public double BrushSize
+    {
+        get => DrawingAttributes.Width;
+        set => DrawingAttributes.Width = DrawingAttributes.Height = value;
+    }
     public double Opacity { get; set; } = 1.0;
     public ToolType CurrentTool { get; set; } = ToolType.Spray;
 
     public ToolManager()
     {
-        _colors = new List<Color>
+        Colors = new List<Color>
         {
             System.Windows.Media.Colors.Black,
             System.Windows.Media.Colors.White,

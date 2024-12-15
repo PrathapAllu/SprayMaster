@@ -1,77 +1,127 @@
-﻿using PropertyChanged;
-using SprayMaster.Models;
+﻿using Microsoft.Win32;
+using PropertyChanged;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace SprayMaster.Services
 {
     [AddINotifyPropertyChangedInterface]
-    public class ImageService : IImageService
+    public class ImageService
     {
-        public BitmapImage CurrentImage { get; set; }
         public double ImageWidth { get; set; }
         public double ImageHeight { get; set; }
-        public double ImageLeft { get; set; }
-        public double ImageTop { get; set; }
         public string ImageName { get; set; } = "None";
         public string ImageFormat { get; set; }
-        public DrawingManager drawingManager;
+        public Image CurrentImage { get; set; }
 
-        public async Task<(BitmapImage Image, double Width, double Height)> LoadAndScaleImage(string path)
-        {
-            var image = await Task.Run(() => LoadImage(path));
-            if (image?.Width > 0 && image?.Height > 0)
-            {
-                ImageWidth = image.Width;
-                ImageHeight = image.Height;
-                CurrentImage = image;
-                return (image, image.Width, image.Height);
-            }
-            return (null, 0, 0);
-        }
 
-        private BitmapImage LoadImage(string path)
+        public void LoadImage()
         {
             try
             {
-                if (string.IsNullOrEmpty(path))
+                OpenFileDialog openFileDialog = new OpenFileDialog
                 {
-                    var dialog = new Microsoft.Win32.OpenFileDialog
-                    {
-                        Filter = "Image files (*.jpg, *.jpeg, *.png, *.bmp)|*.jpg;*.jpeg;*.png;*.bmp"
-                    };
-                    if (dialog.ShowDialog() != true) return null;
-                    path = dialog.FileName;
-                    ImageName = System.IO.Path.GetFileName(path);
-                    ImageFormat = System.IO.Path.GetExtension(path).TrimStart('.').ToUpper();
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
+                };
+
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    var img = new Image();
+                    var bitmap = new BitmapImage();
+                    bitmap.BeginInit();
+                    bitmap.UriSource = new Uri(openFileDialog.FileName, UriKind.Absolute);
+                    bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmap.EndInit();
+
+                    img.Source = bitmap;
+                    CurrentImage = img;
+
+                    ImageWidth = bitmap.Width;
+                    ImageHeight = bitmap.Height;
+                    ImageName = Path.GetFileName(openFileDialog.FileName);
+                    ImageFormat = Path.GetExtension(openFileDialog.FileName).TrimStart('.');
                 }
-
-                var image = new BitmapImage();
-                image.BeginInit();
-                image.UriSource = new Uri(path);
-                image.CacheOption = BitmapCacheOption.OnLoad;
-                image.EndInit();
-                image.Freeze();
-                return image;
             }
-            catch
+            catch (Exception ex)
             {
-                return null;
+                MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
-        public Task SaveImageAsync(string path, BitmapSource image)
+        public void SaveAs()
         {
-            throw new NotImplementedException();
+            if (CurrentImage == null) return;
+
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png",
+                DefaultExt = ".jpg"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                try
+                {
+                    var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                    if (inkCanvas == null) return;
+
+                    var renderBitmap = new RenderTargetBitmap(
+                        (int)inkCanvas.ActualWidth,
+                        (int)inkCanvas.ActualHeight,
+                        96, 96, PixelFormats.Pbgra32);
+
+                    renderBitmap.Render(inkCanvas);
+
+                    BitmapEncoder encoder = saveFileDialog.FileName.EndsWith(".png") ?
+                        new PngBitmapEncoder() : new JpegBitmapEncoder();
+
+                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+                    using (var fs = File.Create(saveFileDialog.FileName))
+                    {
+                        encoder.Save(fs);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving image: {ex.Message}", "Error",
+                        MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
         }
 
-        public Task SavePaintDataAsync(string path, PaintData data)
+        public void Save()
         {
-            throw new NotImplementedException();
-        }
+            if (CurrentImage?.Source is not BitmapImage bitmapImage || string.IsNullOrEmpty(bitmapImage.UriSource?.LocalPath)) return;
 
-        public Task SaveImage(string path, BitmapSource image)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                if (inkCanvas == null) return;
+
+                var renderBitmap = new RenderTargetBitmap(
+                    (int)inkCanvas.ActualWidth,
+                    (int)inkCanvas.ActualHeight,
+                    96, 96, PixelFormats.Pbgra32);
+                renderBitmap.Render(inkCanvas);
+
+                BitmapEncoder encoder = bitmapImage.UriSource.LocalPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ?
+                    new PngBitmapEncoder() : new JpegBitmapEncoder();
+                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+
+                using (var fs = File.Create(bitmapImage.UriSource.LocalPath))
+                {
+                    encoder.Save(fs);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving image: {ex.Message}", "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
