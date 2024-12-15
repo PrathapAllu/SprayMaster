@@ -95,6 +95,8 @@
 
                     <GroupBox Header="Tools" Margin="5" BorderBrush="Gray">
                         <StackPanel>
+                            <ToggleButton Name="btnspray" Content="Spray Can" FontWeight="DemiBold" Height="30" Margin="5" Command="{Binding ActivateSprayCommand}"/>
+                            <ToggleButton Name="btnPen" Content="Pen" FontWeight="DemiBold" Height="30" Margin="5"/>
                             <ToggleButton Name="btnEraser"  Content="Eraser" FontWeight="DemiBold" Height="30" Margin="5" Click="btnEraser_Click"/>
                             <Slider Name="sldEraserSize" Minimum="1" Maximum="50" Value="10" Margin="5"/>
                             <TextBlock Text="{Binding Value, ElementName=sldEraserSize, StringFormat=Eraser Size: {0:F0}}" Margin="5"/>

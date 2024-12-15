@@ -1,7 +1,4 @@
 ﻿using PropertyChanged;
-using SprayMaster;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
@@ -40,5 +37,11 @@ public class ToolManager
         };
         SelectedColor = System.Windows.Media.Colors.Black;
         SelectedBrush = new SolidColorBrush(SelectedColor);
+    }
+
+    public void SprayCan()
+    {
+        CurrentTool = ToolType.Spray;
+        DrawingAttributes.IgnorePressure = true;
     }
 }
