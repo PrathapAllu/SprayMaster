@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SprayMaster" 
         xmlns:converter="clr-namespace:SprayMaster.Helpers"
         mc:Ignorable="d"
-        Title="Spray Master" Height="600" Width="1000"
+        Title="Spray Master"
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         Background="Transparent"
@@ -65,32 +65,29 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Image Canvas Area -->
-                <Grid Grid.Column="0">
-                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                        <Canvas x:Name="imageCanvas" Background="White" ClipToBounds="True"
-        MouseLeftButtonDown="Canvas_MouseDown"
-        MouseMove="Canvas_MouseMove" 
-        MouseLeftButtonUp="Canvas_MouseUp">
-                            <Image Source="{Binding imageService.CurrentImage}" 
+                <Grid Grid.Column="0" Name="canvasGrid"
+                      MouseDown="Grid_MouseDown" 
+      MouseMove="Grid_MouseMove" 
+      MouseUp="Grid_MouseUp" Background="Transparent">
+
+                    <Image Source="{Binding imageService.CurrentImage}" 
            Canvas.Left="{Binding imageService.ImageLeft}"
-           Canvas.Top="{Binding imageService.ImageTop}">
-                                <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
+           Canvas.Top="{Binding imageService.ImageTop}" Stretch="UniformToFill">
+                        <Image.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
                            ScaleY="{Binding imageService.ZoomLevel}"/>
-                                </Image.LayoutTransform>
-                            </Image>
-                            <Image x:Name="drawingLayer"
+                        </Image.LayoutTransform>
+                    </Image>
+                    <Image x:Name="drawingLayer"
            Canvas.Left="{Binding imageService.ImageLeft}"
-           Canvas.Top="{Binding imageService.ImageTop}">
-                                <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
+           Canvas.Top="{Binding imageService.ImageTop}" Stretch="UniformToFill">
+                        <Image.LayoutTransform>
+                            <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
                            ScaleY="{Binding imageService.ZoomLevel}"/>
-                                </Image.LayoutTransform>
-                            </Image>
-                        </Canvas>
-                    </ScrollViewer>
+                        </Image.LayoutTransform>
+                    </Image>
                 </Grid>
-                
+
                 <!-- Tools Panel -->
                 <StackPanel Grid.Column="1" Background="#E8E8E8" Margin="0,5,5,5">
                     <GroupBox Header="Brush" Margin="5" BorderBrush="Gray">
@@ -99,7 +96,7 @@
                             <Button Content="Brush" FontSize="8" FontWeight="DemiBold" Height="30" Width="30" Margin="5"/>
                         </StackPanel>
                     </GroupBox>
-                    
+
                     <GroupBox Header="Tools" Margin="5" BorderBrush="Gray">
                         <StackPanel>
                             <Button Content="Spray Paint" FontWeight="DemiBold" Height="30" Margin="5"/>
@@ -136,6 +133,10 @@
                         <Slider Minimum="0" Maximum="100" Value="{Binding toolManager.Opacity}" Margin="5"/>
                     </GroupBox>
 
+                    <GroupBox Header="Zoom +/-" BorderBrush="Gray">
+                        <Slider Minimum="0.1" Maximum="5" Value="{Binding imageService.ZoomLevel}" 
+                VerticalAlignment="Bottom" Margin="10" Width="200"/>
+                    </GroupBox>
                 </StackPanel>
             </Grid>
 
@@ -143,19 +144,18 @@
             <StatusBar Grid.Row="3" Background="#E0E0E0">
                 <StatusBarItem>
                     <TextBlock>
-   <Run Text="Image: "/>
-   <Run Text="{Binding imageService.ImageName, FallbackValue='None'}"/>
-   <Run Text=" | Format: "/>
-   <Run Text="{Binding imageService.ImageFormat, FallbackValue='--'}"/>
-<Run Text=" | Size: "/>
-<Run>
-   <Run.Text>
-       <MultiBinding StringFormat="{}{0}x{1}">
-<Binding Path="imageService.ImageWidth" FallbackValue="0"/>
-<Binding Path="imageService.ImageHeight" FallbackValue="0"/>
-       </MultiBinding>
-   </Run.Text>
-</Run>
+                        <Run Text="Image: "/>
+                        <Run Text="{Binding imageService.ImageName, FallbackValue='None'}"/>
+                        <Run Text=" | Format: "/>
+                        <Run Text="{Binding imageService.ImageFormat, FallbackValue='--'}"/>
+                        <Run Text=" | Size: "/>
+                        <Run><Run.Text>
+                            
+                            <MultiBinding StringFormat="{}{0}x{1}"><Binding Path="imageService.ImageWidth" FallbackValue="0"/>
+                                <Binding Path="imageService.ImageHeight" FallbackValue="0"/>
+                            </MultiBinding>
+                        </Run.Text>
+                        </Run>
                     </TextBlock>
                 </StatusBarItem>
             </StatusBar>

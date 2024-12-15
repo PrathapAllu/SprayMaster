@@ -14,11 +14,8 @@ namespace SprayMaster.Services
         public double ImageTop { get; set; }
         public string ImageName { get; set; } = "None";
         public string ImageFormat { get; set; }
-        public double CanvasWidth { get; set; } = 800;
-        public double CanvasHeight { get; set; } = 800;
         public DrawingManager drawingManager;
 
-        //TODO: In CenterAndScaleImage remove Hardcoded canvas size and stretch based on uploaded image size
         public async Task<(BitmapImage Image, double Width, double Height)> LoadAndScaleImage(string path)
         {
             var image = await Task.Run(() => LoadImage(path));
@@ -60,13 +57,6 @@ namespace SprayMaster.Services
             {
                 return null;
             }
-        }
-
-
-        public void UpdateCanvasSize(double width, double height)
-        {
-            CanvasWidth = width;
-            CanvasHeight = height;
         }
 
         public Task SaveImageAsync(string path, BitmapSource image)

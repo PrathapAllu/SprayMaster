@@ -20,7 +20,7 @@ namespace SprayMaster
 
             //This enables user to draw on empty page too
             Loaded += (s, e) => {
-                viewModel.drawingManager.InitializeDrawingLayer(imageCanvas.ActualWidth, imageCanvas.ActualHeight);
+                viewModel.drawingManager.InitializeDrawingLayer(canvasGrid.ActualWidth, canvasGrid.ActualHeight);
                 drawingLayer.Source = viewModel.drawingManager.GetDrawingLayer();
             };
         }
@@ -52,32 +52,31 @@ namespace SprayMaster
             else this.WindowState = WindowState.Normal;
         }
 
-        private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Cursor = Cursors.Pen;
-            if(e.LeftButton == MouseButtonState.Pressed)
+            if (e.LeftButton == MouseButtonState.Pressed)
             {
+                Cursor = Cursors.Pen;
                 isDrawing = true;
-                lastPoint = e.GetPosition(imageCanvas);
+                lastPoint = e.GetPosition(drawingLayer);
                 viewModel.drawingManager.StartDrawing(lastPoint);
             }
         }
 
-        private void Canvas_MouseMove(object sender, MouseEventArgs e)
+        private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             if (isDrawing && e.LeftButton == MouseButtonState.Pressed)
             {
-                var currentPoint = e.GetPosition(imageCanvas);
+                var currentPoint = e.GetPosition(drawingLayer);
                 viewModel.drawingManager.Draw(currentPoint,
                     viewModel.toolManager.SelectedColor,
-                    viewModel.toolManager.BrushSize,
                     viewModel.toolManager.Opacity,
+                    viewModel.toolManager.BrushSize,
                     viewModel.toolManager.CurrentTool);
             }
         }
 
-
-        private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
+        private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
             Cursor = Cursors.Arrow;
             if (e.LeftButton == MouseButtonState.Released)
