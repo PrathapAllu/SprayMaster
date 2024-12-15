@@ -9,7 +9,7 @@ using System.Windows.Media.Imaging;
 namespace SprayMaster.Services
 {
     [AddINotifyPropertyChangedInterface]
-    public class ImageService
+    public class ImageService : IImageService
     {
         public double ImageWidth { get; set; }
         public double ImageHeight { get; set; }
@@ -57,7 +57,7 @@ namespace SprayMaster.Services
 
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
-                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png",
+                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
                 DefaultExt = ".jpg"
             };
 
@@ -122,6 +122,12 @@ namespace SprayMaster.Services
                 MessageBox.Show($"Error saving image: {ex.Message}", "Error",
                     MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public void ClearAll()
+        {
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+            inkCanvas.Strokes.Clear();
         }
     }
 }

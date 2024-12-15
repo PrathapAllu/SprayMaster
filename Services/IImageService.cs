@@ -1,13 +1,18 @@
-﻿using SprayMaster.Models;
-using System.Windows.Media.Imaging;
+﻿using System.Windows.Controls;
 
 namespace SprayMaster.Services
 {
     public interface IImageService
     {
-        public Task<(BitmapImage Image, double Width, double Height)> LoadAndScaleImage(string path);
-        Task SaveImage(string path, BitmapSource image);
-        Task SaveImageAsync(string path, BitmapSource image);
-        Task SavePaintDataAsync(string path);
+        double ImageWidth { get; set; }
+        double ImageHeight { get; set; }
+        string ImageName { get; set; }
+        string ImageFormat { get; set; }
+        Image CurrentImage { get; set; }
+
+        void LoadImage();
+        void SaveAs();
+        void Save();
+        void ClearAll();
     }
 }

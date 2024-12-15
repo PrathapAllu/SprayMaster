@@ -1,4 +1,6 @@
 ﻿using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Ink;
 using System.Windows.Input;
 
 namespace SprayMaster
@@ -47,5 +49,18 @@ namespace SprayMaster
             else this.WindowState = WindowState.Normal;
         }
         #endregion
+
+        private void btnEraser_Click(object sender, RoutedEventArgs e)
+        {
+            if (btnEraser.IsChecked.Value)
+            {
+                canvasPanel.EditingMode = InkCanvasEditingMode.EraseByPoint;
+                canvasPanel.EraserShape = new EllipseStylusShape(sldEraserSize.Value, sldEraserSize.Value);
+            }
+            else
+            {
+                canvasPanel.EditingMode = InkCanvasEditingMode.Ink;
+            }
+        }
     }
 }

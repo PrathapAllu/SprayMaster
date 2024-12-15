@@ -1,4 +1,7 @@
 ﻿using PropertyChanged;
+using SprayMaster;
+using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
