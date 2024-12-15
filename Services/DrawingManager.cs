@@ -20,12 +20,6 @@ public class DrawingManager : IDrawingManager
         _paintData = new PaintData();
     }
 
-    //private void InitializeDrawingLayer()
-    //{
-    //    InitializeDrawingLayer(viewModel.ImageWidth, viewModel.ImageHeight);
-    //    drawingLayer.Source = GetDrawingLayer();
-    //}
-
     public void InitializeDrawingLayer(double width, double height)
     {
         drawingLayer = new WriteableBitmap(

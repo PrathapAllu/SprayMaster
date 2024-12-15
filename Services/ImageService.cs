@@ -1,33 +1,22 @@
-﻿using SprayMaster.Models;
+﻿using PropertyChanged;
+using SprayMaster.Models;
 using System.Windows.Media.Imaging;
 
 namespace SprayMaster.Services
 {
-    public  class ImageService : IImageService
+    [AddINotifyPropertyChangedInterface]
+    public class ImageService : IImageService
     {
         public BitmapImage CurrentImage { get; set; }
-        public double ZoomLevel { get; set; } = 1.0;
         public double ImageWidth { get; set; }
         public double ImageHeight { get; set; }
         public double ImageLeft { get; set; }
         public double ImageTop { get; set; }
         public string ImageName { get; set; } = "None";
         public string ImageFormat { get; set; }
-
-        public Task SaveImageAsync(string path, BitmapSource image)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SavePaintDataAsync(string path, PaintData data)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task SaveImage(string path, BitmapSource image)
-        {
-            throw new NotImplementedException();
-        }
+        public double CanvasWidth { get; set; } = 800;
+        public double CanvasHeight { get; set; } = 800;
+        public DrawingManager drawingManager;
 
         //TODO: In CenterAndScaleImage remove Hardcoded canvas size and stretch based on uploaded image size
         public async Task<(BitmapImage Image, double Width, double Height)> LoadAndScaleImage(string path)
@@ -38,7 +27,6 @@ namespace SprayMaster.Services
                 ImageWidth = image.Width;
                 ImageHeight = image.Height;
                 CurrentImage = image;
-                CenterAndScaleImage(image, 800, 600);
                 return (image, image.Width, image.Height);
             }
             return (null, 0, 0);
@@ -74,17 +62,26 @@ namespace SprayMaster.Services
             }
         }
 
-        public void CenterAndScaleImage(BitmapImage image, double canvasWidth, double canvasHeight)
-        {
-            if (image == null) return;
 
-            double scaleX = canvasWidth / image.Width;
-            double scaleY = canvasHeight / image.Height;
-            ZoomLevel = Math.Min(scaleX, scaleY);
-            ImageLeft = (canvasWidth - (image.Width * ZoomLevel)) / 2;
-            ImageTop = (canvasHeight - (image.Height * ZoomLevel)) / 2;
-            ImageWidth = image.Width;
-            ImageHeight = image.Height;
+        public void UpdateCanvasSize(double width, double height)
+        {
+            CanvasWidth = width;
+            CanvasHeight = height;
+        }
+
+        public Task SaveImageAsync(string path, BitmapSource image)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SavePaintDataAsync(string path, PaintData data)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SaveImage(string path, BitmapSource image)
+        {
+            throw new NotImplementedException();
         }
     }
 }

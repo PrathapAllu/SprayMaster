@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        xmlns:local="clr-namespace:SprayMaster" xmlns:local11="clr-namespace:SprayMaster.Helpers"
+        xmlns:local="clr-namespace:SprayMaster" 
+        xmlns:converter="clr-namespace:SprayMaster.Helpers"
         mc:Ignorable="d"
         Title="Spray Master" Height="600" Width="1000"
         WindowStartupLocation="CenterScreen"
@@ -12,7 +12,7 @@
         Background="Transparent"
         AllowsTransparency="True">
     <Window.Resources>
-        <local11:ColorToBrushConverter x:Key="ColorConverter"/>
+        <converter:ColorToBrushConverter x:Key="ColorConverter"/>
     </Window.Resources>
     <Border Background="White" CornerRadius="10">
         <Grid>
@@ -75,10 +75,18 @@
            Canvas.Left="{Binding imageService.ImageLeft}"
            Canvas.Top="{Binding imageService.ImageTop}">
                                 <Image.LayoutTransform>
-                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" ScaleY="{Binding imageService.ZoomLevel}"/>
+                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
+                           ScaleY="{Binding imageService.ZoomLevel}"/>
                                 </Image.LayoutTransform>
                             </Image>
-                            <Image x:Name="drawingLayer"/>
+                            <Image x:Name="drawingLayer"
+           Canvas.Left="{Binding imageService.ImageLeft}"
+           Canvas.Top="{Binding imageService.ImageTop}">
+                                <Image.LayoutTransform>
+                                    <ScaleTransform ScaleX="{Binding imageService.ZoomLevel}" 
+                           ScaleY="{Binding imageService.ZoomLevel}"/>
+                                </Image.LayoutTransform>
+                            </Image>
                         </Canvas>
                     </ScrollViewer>
                 </Grid>
@@ -128,10 +136,6 @@
                         <Slider Minimum="0" Maximum="100" Value="{Binding toolManager.Opacity}" Margin="5"/>
                     </GroupBox>
 
-                    <GroupBox Header="Zoom +/-" BorderBrush="Gray">
-                        <Slider Minimum="0.1" Maximum="5" Value="{Binding imageService.ZoomLevel}" 
-                VerticalAlignment="Bottom" Margin="10" Width="200"/>
-                    </GroupBox>
                 </StackPanel>
             </Grid>
 

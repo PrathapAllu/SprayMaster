@@ -9,6 +9,5 @@ namespace SprayMaster.Services
         Task SaveImage(string path, BitmapSource image);
         Task SaveImageAsync(string path, BitmapSource image);
         Task SavePaintDataAsync(string path, PaintData data);
-        void CenterAndScaleImage(BitmapImage image, double canvasWidth, double canvasHeight);
     }
 }

@@ -17,6 +17,12 @@ namespace SprayMaster
             InitializeComponent();
             viewModel = new MainViewModel();
             DataContext = viewModel;
+
+            //This enables user to draw on empty page too
+            Loaded += (s, e) => {
+                viewModel.drawingManager.InitializeDrawingLayer(imageCanvas.ActualWidth, imageCanvas.ActualHeight);
+                drawingLayer.Source = viewModel.drawingManager.GetDrawingLayer();
+            };
         }
 
         private void panelControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

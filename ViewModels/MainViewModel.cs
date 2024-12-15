@@ -13,7 +13,7 @@ public class MainViewModel
 
     public ToolManager toolManager { get; set; }
     public DrawingManager drawingManager;
-    public ImageService imageService { get; private set; }
+    public ImageService imageService { get; set; }
 
     public MainViewModel()
     {
