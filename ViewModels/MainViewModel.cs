@@ -2,6 +2,7 @@
 using SprayMaster.Helpers;
 using SprayMaster.Interface;
 using SprayMaster.Models;
+using SprayMaster.Services;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -24,6 +25,7 @@ public class MainViewModel : IImageService
     public ICommand SavePaintDataAsyncCommand { get; private set; }
 
     public ToolManager ToolManager { get; set; }
+    private DrawingManager drawingManager;
 
     public MainViewModel()
     {

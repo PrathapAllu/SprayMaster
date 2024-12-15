@@ -1,9 +1,6 @@
-﻿using SprayMaster.Services;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace SprayMaster
 {
@@ -29,7 +26,7 @@ namespace SprayMaster
 
         private void InitializeDrawingLayer()
         {
-            drawingManager.InitializeDrawingLayer(800, 600);
+            drawingManager.InitializeDrawingLayer(viewModel.ImageWidth, viewModel.ImageHeight);
             drawingLayer.Source = drawingManager.GetDrawingLayer();
         }
 
@@ -73,6 +70,15 @@ namespace SprayMaster
             if (this.WindowState == WindowState.Normal)
                 this.WindowState = WindowState.Maximized;
             else this.WindowState = WindowState.Normal;
+        }
+
+        public void InitializeDrawingLayer(double width, double height)
+        {
+            if (drawingManager != null && drawingLayer != null)
+            {
+                drawingManager.InitializeDrawingLayer(width, height);
+                drawingLayer.Source = drawingManager.GetDrawingLayer();
+            }
         }
 
         private void Canvas_MouseDown(object sender, MouseButtonEventArgs e)
