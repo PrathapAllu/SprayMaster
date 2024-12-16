@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SprayMaster" 
         xmlns:converter="clr-namespace:SprayMaster.Helpers"
+        xmlns:viewModel="clr-namespace:SprayMaster.ViewModels"
+        d:DataContext="{d:DesignInstance viewModel:MainViewModel}"
         mc:Ignorable="d"
         Title="Spray Master"
         WindowStartupLocation="CenterScreen"
@@ -24,7 +26,7 @@
             </Grid.RowDefinitions>
 
             <!-- Top Control Bar -->
-            <Border Background="Black" CornerRadius="10,10,0,0">
+            <Border Background="DarkSlateGray" CornerRadius="10,10,0,0">
                 <StackPanel x:Name="pnlControlBar"
             Grid.Row="0"
             Orientation="Horizontal"
@@ -33,7 +35,7 @@
             Margin="0,0,5,0"
             MouseLeftButtonDown="panelControlBar_MouseLeftButtonDown"
             MouseEnter="panelnlControlBar_MouseEnter">
-                    <Button x:Name="btnClose" Content="X"  Background="Red" Width="20" Height="20" Margin="0,0,2,0" Click="btnClose_Click"/>
+                    <Button x:Name="btnClose" Content="X"  Background="DarkRed" Width="20" Height="20" Margin="0,0,2,0" Click="btnClose_Click"/>
                     <Button x:Name="btnMaximize" Content="O" Background="WhiteSmoke" Width="20" Height="20" Margin="0,0,2,0" Click="btnMaximize_Click"/>
                     <Button x:Name="btnMinimize" Content="-" Background="Gray" Width="20" Height="20" Margin="0,0,2,0" Click="btnMinimize_Click"/>
                 </StackPanel>
@@ -97,8 +99,8 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                                 <ToggleButton Name="btnspray" Content="Spray Can" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
                                 <ToggleButton Name="btnPen" Content="Pen" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
-                                <ToggleButton Name="btnFill" Content="Spray Can" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
-                                <ToggleButton Name="btnBrush" Content="Pen" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
+                                <ToggleButton Name="btnFill" Content="Fill" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
+                                <ToggleButton Name="btnBrush" Content="Brush" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
                             </StackPanel>
                             <Slider Name="sldEraserSize" Minimum="1" Maximum="50" Value="10" Margin="5"/>
                             <TextBlock Text="{Binding Value, ElementName=sldEraserSize, StringFormat=Eraser Size: {0:F0}}" Margin="5"/>

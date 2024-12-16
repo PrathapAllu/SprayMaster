@@ -14,6 +14,7 @@ namespace SprayMaster
         public MainWindow()
         {
             InitializeComponent();
+            //TODO: Attach ViewModel when app is loading in app.xaml.cs
             viewModel = new MainViewModel();
             DataContext = viewModel;
         }
