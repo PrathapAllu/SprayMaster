@@ -1,10 +1,9 @@
 ﻿using PropertyChanged;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
-using SprayMaster;
 
 namespace SprayMaster.Services
 {
@@ -32,16 +31,23 @@ namespace SprayMaster.Services
         {
             Colors = new List<Color>
         {
-            System.Windows.Media.Colors.Black,
-            System.Windows.Media.Colors.White,
-            System.Windows.Media.Colors.Red,
-            System.Windows.Media.Colors.Green,
-            System.Windows.Media.Colors.Blue,
-            System.Windows.Media.Colors.Yellow,
-            System.Windows.Media.Colors.Purple,
-            System.Windows.Media.Colors.Orange
+                System.Windows.Media.Colors.Black,
+                System.Windows.Media.Colors.White,
+                System.Windows.Media.Colors.Red,
+                System.Windows.Media.Colors.Green,
+                System.Windows.Media.Colors.Blue,
+                System.Windows.Media.Colors.Yellow,
+                System.Windows.Media.Colors.Purple,
+                System.Windows.Media.Colors.Orange,
+                System.Windows.Media.Colors.Pink,
+                System.Windows.Media.Colors.Brown,
+                System.Windows.Media.Colors.Gray,
+                System.Windows.Media.Colors.Cyan,
+                System.Windows.Media.Colors.Magenta,
+                System.Windows.Media.Colors.Lime,
+                System.Windows.Media.Colors.Teal
         };
-            SelectedColor = System.Windows.Media.Colors.Black;
+            SelectedColor = System.Windows.Media.Colors.Red;
             SelectedBrush = new SolidColorBrush(SelectedColor);
         }
 

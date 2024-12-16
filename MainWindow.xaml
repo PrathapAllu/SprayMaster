@@ -42,99 +42,107 @@
             </Border>
 
             <!-- Menu Bar -->
-            <DockPanel Grid.Row="1" Background="#E0E0E0">
+            <DockPanel Grid.Row="1" Background="WhiteSmoke" LastChildFill="False">
                 <Menu DockPanel.Dock="Left" Background="Transparent" VerticalAlignment="Center" Margin="5,0,0,0">
                     <MenuItem Header="File" FontSize="15">
                         <MenuItem Header="Open" Command="{Binding LoadImageCommand}"/>
                         <MenuItem Header="Save" Command="{Binding SaveImageCommand}"/>
                         <MenuItem Header="Save As" Command="{Binding SaveImageAsCommand}"/>
-                        <MenuItem Header="Save Paint Data" Command="{Binding SaveStrokeDataCommand}"/>
-                        <MenuItem Header="Load Paint Data" Command="{Binding SaveImageAsCommand}"/>
+                        <MenuItem Header="Save Paint Data" Command="{Binding UnavailableCommand}"/>
+                        <MenuItem Header="Load Paint Data" Command="{Binding UnavailableCommand}"/>
                         <Separator/>
                         <MenuItem Header="Exit" Click="btnClose_Click"/>
                     </MenuItem>
                     <MenuItem Header="Edit" FontSize="15">
-                        <MenuItem Header="Undo"/>
+                        <MenuItem Header="Undo" Command="{Binding UnavailableCommand}"/>
                         <Separator/>
-                        <MenuItem Header="Clear All"/>
+                        <MenuItem Header="Clear All" Command="{Binding ClearAllCommand}"/>
                     </MenuItem>
-                    <MenuItem Header="SAVE" FontSize="15" Command="{Binding SaveImageCommand}">
+                    <MenuItem Header="Help" FontSize="15" Command="{Binding UnavailableCommand}">
+                        <MenuItem Header="View Help" Command="{Binding UnavailableCommand}"/>
+                        <MenuItem Header="About Spray Master" Command="{Binding UnavailableCommand}"/>
+                    </MenuItem>
+                    <MenuItem Header="Save" FontSize="15" Command="{Binding SaveImageCommand}">
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="CLEAR ALL" FontSize="15" Command="{Binding ClearAllCommand}">
-                    </MenuItem>
+                    <MenuItem Header="Clear All" FontSize="15" Command="{Binding ClearAllCommand}"/>
                 </Menu>
             </DockPanel>
 
             <!-- Main Content -->
             <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="12*"/>
-                    <ColumnDefinition Width="23*"/>
-                    <ColumnDefinition Width="35*"/>
+                    <ColumnDefinition Width="350*"/>
                     <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Image Canvas Area -->
-                <Grid Grid.Column="0" Grid.ColumnSpan="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="23*"/>
-                        <ColumnDefinition Width="328*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.Column="0" Grid.ColumnSpan="2">
-                        <DockPanel>
-                            <InkCanvas Name="canvasPanel" DefaultDrawingAttributes="{Binding toolManager.DrawingAttributes}">
-                                <InkCanvas.Children>
-                                    <ContentControl Content="{Binding imageService.CurrentImage}"/>
-                                </InkCanvas.Children>
-                            </InkCanvas>
-                        </DockPanel>
+                <Border Margin="10,10,10,10" BorderThickness="3" BorderBrush="DarkSlateGray">
+                    <Grid>
+                        <Grid.Effect>
+                            <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.15" ShadowDepth="2"/>
+                        </Grid.Effect>
+                        <InkCanvas x:Name="canvasPanel" Background="White" 
+                  DefaultDrawingAttributes="{Binding toolManager.DrawingAttributes}">
+                            <InkCanvas.Children>
+                                <ContentControl Content="{Binding imageService.CurrentImage}"/>
+                            </InkCanvas.Children>
+                        </InkCanvas>
                     </Grid>
-                </Grid>
+                </Border>
 
                 <!-- Tools Panel -->
-                <StackPanel Grid.Column="3" Background="#E8E8E8" Margin="0,5,5,5">
-                    <GroupBox Header="Tools" Margin="5" BorderBrush="Gray">
-                        <StackPanel>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                <ToggleButton Name="btnspray" Content="Spray Can" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
-                                <ToggleButton Name="btnPen" Content="Pen" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
-                                <ToggleButton Name="btnFill" Content="Fill" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
-                                <ToggleButton Name="btnBrush" Content="Brush" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding UnavailableCommand}"/>
+                <Grid Grid.Column="1" Background="WhiteSmoke" Grid.ColumnSpan="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Column="1" Background="WhiteSmoke" Grid.ColumnSpan="2">
+                        <GroupBox Header="Tools" Margin="5" BorderBrush="Black">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                    <ToggleButton Name="btnspray" Content="Spray Can" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
+                                    <ToggleButton Name="btnPen" Content="Pen" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding ActivateSprayCommand}"/>
+                                    <ToggleButton Name="btnFill" Content="Fill" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding UnavailableCommand}"/>
+                                    <ToggleButton Name="btnBrush" Content="Brush" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding UnavailableCommand}"/>
+                                </StackPanel>
+                                <ToggleButton Name="btnEraser"  Content="Eraser" FontWeight="DemiBold" Height="30" Margin="5" Command="{Binding UseEraserCommand}"/>
+                                <Slider Name="sldEraserSize" Minimum="1" Maximum="50" Value="10" Margin="5"/>
+                                <TextBlock Text="{Binding Value, ElementName=sldEraserSize, StringFormat=Eraser Size: {0:F0}}" Margin="5"/>
                             </StackPanel>
-                            <Slider Name="sldEraserSize" Minimum="1" Maximum="50" Value="10" Margin="5"/>
-                            <TextBlock Text="{Binding Value, ElementName=sldEraserSize, StringFormat=Eraser Size: {0:F0}}" Margin="5"/>
-                        </StackPanel>
-                    </GroupBox>
+                        </GroupBox>
 
-                    <GroupBox Header="Color" Margin="5" BorderBrush="Gray">
-                        <StackPanel>
-                            <ComboBox ItemsSource="{Binding toolManager.Colors}" 
+                        <GroupBox Header="Color" Margin="5" BorderBrush="Black">
+                            <StackPanel>
+                                <ComboBox ItemsSource="{Binding toolManager.Colors}" 
           SelectedValue="{Binding toolManager.SelectedColor}">
-                                <ComboBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Rectangle Width="20" Height="20">
-                                                <Rectangle.Fill>
-                                                    <SolidColorBrush Color="{Binding}"/>
-                                                </Rectangle.Fill>
-                                            </Rectangle>
-                                            <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ComboBox.ItemTemplate>
-                            </ComboBox>
-                        </StackPanel>
-                    </GroupBox>
+                                    <ComboBox.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Rectangle Width="20" Height="20">
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding}"/>
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                                <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ComboBox.ItemTemplate>
+                                </ComboBox>
+                            </StackPanel>
+                        </GroupBox>
 
-                    <!-- Brush Sliders -->
-                    <GroupBox Header="Brush Size +/-" Margin="5" BorderBrush="Gray">
-                        <StackPanel>
-                            <Slider Name="sldBrushSize" Minimum="1" Maximum="30" Value="{Binding toolManager.BrushSize}" Margin="5"/>
-                            <TextBlock Text="{Binding Value, ElementName=sldBrushSize, StringFormat=Brush Size: {0:F0}}" Margin="5"/>
-                        </StackPanel>
-                    </GroupBox>
-                </StackPanel>
+                        <!-- Brush Sliders -->
+                        <GroupBox Header="Spray Size +/-" Margin="5" BorderBrush="Black">
+                            <StackPanel>
+                                <Slider Name="sldBrushSize" Minimum="1" Maximum="30" Value="{Binding toolManager.BrushSize}" Margin="5"/>
+                                <TextBlock Text="{Binding Value, ElementName=sldBrushSize, StringFormat=Brush Size: {0:F0}}" Margin="5"/>
+                            </StackPanel>
+                        </GroupBox>
+                    </StackPanel>
+                </Grid>
             </Grid>
 
             <!-- Status Bar -->
@@ -154,6 +162,9 @@
                         </Run.Text>
                         </Run>
                     </TextBlock>
+                </StatusBarItem>
+                <StatusBarItem HorizontalAlignment="Right">
+                    <TextBlock Text="Status: Ready"/>
                 </StatusBarItem>
             </StatusBar>
         </Grid>
