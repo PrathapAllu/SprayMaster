@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:SprayMaster" 
+        xmlns:local="clr-namespace:SprayMaster"
+        xmlns:views="clr-namespace:SprayMaster.Views"
         xmlns:converter="clr-namespace:SprayMaster.Helpers"
         xmlns:viewModel="clr-namespace:SprayMaster.ViewModels"
         d:DataContext="{d:DesignInstance viewModel:MainViewModel}"
@@ -96,56 +97,11 @@
                 </Border>
 
                 <!-- Tools Panel -->
-                <Grid Grid.Column="1" Background="WhiteSmoke" Grid.ColumnSpan="2">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Column="1" Background="WhiteSmoke" Grid.ColumnSpan="2">
-                        <GroupBox Header="Tools" Margin="5" BorderBrush="Black">
-                            <StackPanel>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                                    <ToggleButton Name="btnspray" Content="Spray Can" FontWeight="DemiBold" Height="35" Width="35" Margin="4" Command="{Binding ActivateSprayCommand}"/>
-                                    <ToggleButton Name="btnPen" Content="Pen" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding ActivateSprayCommand}"/>
-                                    <ToggleButton Name="btnFill" Content="Fill" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding UnavailableCommand}"/>
-                                    <ToggleButton Name="btnBrush" Content="Brush" FontWeight="DemiBold" Height="35" Width="35" Margin="5" Command="{Binding UnavailableCommand}"/>
-                                </StackPanel>
-                                <ToggleButton Name="btnEraser"  Content="Eraser" FontWeight="DemiBold" Height="30" Margin="5" Command="{Binding UseEraserCommand}"/>
-                                <Slider Name="sldEraserSize" Minimum="1" Maximum="50" Value="10" Margin="5"/>
-                                <TextBlock Text="{Binding Value, ElementName=sldEraserSize, StringFormat=Eraser Size: {0:F0}}" Margin="5"/>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <GroupBox Header="Color" Margin="5" BorderBrush="Black">
-                            <StackPanel>
-                                <ComboBox ItemsSource="{Binding toolManager.Colors}" 
-          SelectedValue="{Binding toolManager.SelectedColor}">
-                                    <ComboBox.ItemTemplate>
-                                        <DataTemplate>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Rectangle Width="20" Height="20">
-                                                    <Rectangle.Fill>
-                                                        <SolidColorBrush Color="{Binding}"/>
-                                                    </Rectangle.Fill>
-                                                </Rectangle>
-                                                <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
-                                            </StackPanel>
-                                        </DataTemplate>
-                                    </ComboBox.ItemTemplate>
-                                </ComboBox>
-                            </StackPanel>
-                        </GroupBox>
-
-                        <!-- Brush Sliders -->
-                        <GroupBox Header="Spray Size +/-" Margin="5" BorderBrush="Black">
-                            <StackPanel>
-                                <Slider Name="sldBrushSize" Minimum="1" Maximum="30" Value="{Binding toolManager.BrushSize}" Margin="5"/>
-                                <TextBlock Text="{Binding Value, ElementName=sldBrushSize, StringFormat=Brush Size: {0:F0}}" Margin="5"/>
-                            </StackPanel>
-                        </GroupBox>
-                    </StackPanel>
-                </Grid>
+                <!-- Tools Panel -->
+                <StackPanel Grid.Column="1" Background="WhiteSmoke">
+                    <views:ToolsView DataContext="{Binding}"/>
+                    <views:ColorPickerView DataContext="{Binding}"/>
+                </StackPanel>
             </Grid>
 
             <!-- Status Bar -->

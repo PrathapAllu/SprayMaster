@@ -12,6 +12,11 @@ namespace SprayMaster.ViewModels
     [AddINotifyPropertyChangedInterface]
     public class MainViewModel
     {
+        private InkCanvas inkCanvas;
+        public ToolManager toolManager { get; }
+        public ImageService imageService { get; }
+        public SprayCanService sprayCanService { get; }
+
         public ICommand LoadImageCommand { get; private set; }
         public ICommand SaveImageAsCommand { get; private set; }
         public ICommand SaveImageCommand { get; private set; }
@@ -20,20 +25,26 @@ namespace SprayMaster.ViewModels
         public ICommand UseEraserCommand { get; set; }
         public ICommand UnavailableCommand { get; set; }
 
-        public ToolManager toolManager { get; set; }
-        public ImageService imageService { get; set; }
-        public SprayCanService sprayCanService { get; set; }
-
-        public MainViewModel()
+        public MainViewModel(ToolManager toolManager, ImageService imageService, SprayCanService sprayCanService)
         {
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            toolManager = new ToolManager();
-            imageService = new ImageService();
-            sprayCanService = new SprayCanService(toolManager.BrushSize, toolManager.DrawingAttributes);
+            this.toolManager = toolManager;
+            this.imageService = imageService;
+            this.sprayCanService = sprayCanService;
+            InitializeCommands();
+        }
+
+        public void Initialize(InkCanvas canvas)
+        {
+            this.inkCanvas = canvas;
+        }
+
+        private void InitializeCommands()
+        {
             LoadImageCommand = new RelayCommand(imageService.LoadImage);
             SaveImageAsCommand = new RelayCommand(imageService.SaveAs);
             SaveImageCommand = new RelayCommand(imageService.Save);
             ClearAllCommand = new RelayCommand(imageService.ClearAll);
+
             ActivateSprayCommand = new RelayCommand(() => {
                 toolManager.isSprayCanActive = !toolManager.isSprayCanActive;
                 if (toolManager.CurrentTool == ToolType.Spray && toolManager.isSprayCanActive)
@@ -48,12 +59,12 @@ namespace SprayMaster.ViewModels
                     inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
                 }
             });
-            UseEraserCommand = new RelayCommand(() =>
-            {
+
+            UseEraserCommand = new RelayCommand(() => {
                 toolManager.isUseEraser = !toolManager.isUseEraser;
                 toolManager.UseEraser(toolManager.isUseEraser);
-
             });
+
             UnavailableCommand = new RelayCommand(DefaultSystemsMessages);
         }
 
