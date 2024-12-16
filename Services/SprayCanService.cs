@@ -1,5 +1,4 @@
 ﻿using PropertyChanged;
-using SprayMaster.Helpers;
 using SprayMaster.Models;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,9 +25,7 @@ namespace SprayMaster.Services
         public SprayCanService(double sprayRadius, DrawingAttributes sprayAttributes)
         {
             //TODO:Inject MainWindow via DI instead of accessing like this
-            var window = Application.Current.MainWindow as MainWindow;
-            this.inkCanvas = window?.canvasPanel;
-            window.CanvasMouseEvent += OnCanvasMouseEvent;
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
             this.inkCanvas = inkCanvas;
             this.sprayRadius = sprayRadius;
             this.particlesPerSecond = (int)(100000 * sprayRadius);
@@ -37,15 +34,11 @@ namespace SprayMaster.Services
 
             this.sprayTimer = new DispatcherTimer();
             this.sprayTimer.Tick += SprayTimer_Tick;
-        }
 
-        private void OnCanvasMouseEvent(object sender, CanvasMouseEventArgs e)
-        {
-            IsMousePressed = e.IsPressed;
-            sprayCenter = e.Position;
-
-            if (!e.IsPressed)
-                inkCanvas.Cursor = Cursors.Arrow;
+            // Subscribe to mouse events
+            inkCanvas.MouseDown += InkCanvas_MouseDown;
+            inkCanvas.MouseMove += InkCanvas_MouseMove;
+            inkCanvas.MouseUp += InkCanvas_MouseUp;
         }
 
         public void StartSpraying()
@@ -86,6 +79,27 @@ namespace SprayMaster.Services
                 }
             }
         }
+        #region Canvas Mouse events regin
+        private void InkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            IsMousePressed = true;
+            sprayCenter = e.GetPosition(inkCanvas);
+        }
+
+        private void InkCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (IsMousePressed)
+            {
+                sprayCenter = e.GetPosition(inkCanvas);
+            }
+        }
+
+        private void InkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            IsMousePressed = false;
+            inkCanvas.Cursor = Cursors.Arrow;
+        }
+        #endregion
     }
 }
 
