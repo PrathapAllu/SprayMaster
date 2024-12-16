@@ -21,6 +21,7 @@ namespace SprayMaster.Services
 
         public void LoadImage()
         {
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
@@ -45,6 +46,8 @@ namespace SprayMaster.Services
                     ImageName = Path.GetFileName(openFileDialog.FileName);
                     ImageFormat = Path.GetExtension(openFileDialog.FileName).TrimStart('.');
 
+                    inkCanvas?.Children.Clear();
+                    inkCanvas?.Children.Add(CurrentImage);
                     LoadAssociatedStrokes();
                 }
                 catch (Exception ex)
@@ -165,7 +168,12 @@ namespace SprayMaster.Services
         public void ClearAll()
         {
             var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            if (inkCanvas != null) inkCanvas.Strokes.Clear();
+            if (inkCanvas != null)
+            {
+                inkCanvas.Strokes.Clear();
+                inkCanvas.Children.Clear();
+
+            }
         }
     }
 }
