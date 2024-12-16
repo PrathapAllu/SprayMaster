@@ -1,7 +1,6 @@
 ﻿using SprayMaster.Helpers;
 using SprayMaster.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SprayMaster
@@ -13,14 +12,15 @@ namespace SprayMaster
     {
         private readonly MainViewModel viewModel;
         public event EventHandler<CanvasMouseEventArgs> CanvasMouseEvent;
-        public MainWindow(MainViewModel mainViewModel)
+
+        public MainWindow()
         {
             InitializeComponent();
-            DataContext = mainViewModel;
-            canvasPanel.EditingMode = InkCanvasEditingMode.Ink;
+            //TODO: Attach ViewModel when app is loading in app.xaml.cs
+            viewModel = new MainViewModel();
+            DataContext = viewModel;
         }
 
-        #region control bar and mouse moments
         private void InkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
             CanvasMouseEvent?.Invoke(this, new CanvasMouseEventArgs
@@ -51,6 +51,7 @@ namespace SprayMaster
             });
         }  
 
+    #region control bar functions
     private void panelControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
