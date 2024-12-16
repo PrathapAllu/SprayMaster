@@ -1,6 +1,7 @@
 ﻿using PropertyChanged;
 using SprayMaster.Helpers;
 using SprayMaster.Services;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -54,15 +55,25 @@ namespace SprayMaster.ViewModels
 
             });
             SaveStrokeDataCommand = new RelayCommand(SaveStrokesData);
-
         }
 
         public void SaveStrokesData()
         {
-        }
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+            if (inkCanvas == null || imageService.CurrentImage == null) return;
 
-        public void LoadStrokesData()
-        {
+            try
+            {
+                var strokesPath = Path.ChangeExtension(imageService.CurrentImage.Name, ".isf");
+                using (var fs = new FileStream(strokesPath, FileMode.Create))
+                {
+                    inkCanvas.Strokes.Save(fs);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving strokes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ using PropertyChanged;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
+using System.Windows.Ink;
 using System.Windows.Media.Imaging;
 
 namespace SprayMaster.Services
@@ -16,45 +16,64 @@ namespace SprayMaster.Services
         public string ImageName { get; set; } = "None";
         public string ImageFormat { get; set; }
         public Image CurrentImage { get; set; }
-
+        private string lastImagePath;
 
         public void LoadImage()
         {
-            try
+            OpenFileDialog openFileDialog = new OpenFileDialog
             {
-                OpenFileDialog openFileDialog = new OpenFileDialog
-                {
-                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
-                };
+                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
+            };
 
-                if (openFileDialog.ShowDialog() == true)
+            if (openFileDialog.ShowDialog() == true)
+            {
+                try
                 {
-                    var img = new Image();
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
                     bitmap.UriSource = new Uri(openFileDialog.FileName, UriKind.Absolute);
                     bitmap.CacheOption = BitmapCacheOption.OnLoad;
                     bitmap.EndInit();
 
-                    img.Source = bitmap;
+                    var img = new Image { Source = bitmap };
                     CurrentImage = img;
+                    lastImagePath = openFileDialog.FileName;
 
                     ImageWidth = bitmap.Width;
                     ImageHeight = bitmap.Height;
                     ImageName = Path.GetFileName(openFileDialog.FileName);
                     ImageFormat = Path.GetExtension(openFileDialog.FileName).TrimStart('.');
+
+                    LoadAssociatedStrokes();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void LoadAssociatedStrokes()
+        {
+            var strokesPath = GetStrokesPath();
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+            if (inkCanvas == null || !File.Exists(strokesPath)) return;
+
+            try
+            {
+                using (var fs = new FileStream(strokesPath, FileMode.Open))
+                {
+                    inkCanvas.Strokes = new StrokeCollection(fs);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error loading strokes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         public void SaveAs()
         {
-            if (CurrentImage == null) return;
-
             SaveFileDialog saveFileDialog = new SaveFileDialog
             {
                 Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
@@ -63,71 +82,61 @@ namespace SprayMaster.Services
 
             if (saveFileDialog.ShowDialog() == true)
             {
-                try
-                {
-                    var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-                    if (inkCanvas == null) return;
-
-                    var renderBitmap = new RenderTargetBitmap(
-                        (int)inkCanvas.ActualWidth,
-                        (int)inkCanvas.ActualHeight,
-                        96, 96, PixelFormats.Pbgra32);
-
-                    renderBitmap.Render(inkCanvas);
-
-                    BitmapEncoder encoder = saveFileDialog.FileName.EndsWith(".png") ?
-                        new PngBitmapEncoder() : new JpegBitmapEncoder();
-
-                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-
-                    using (var fs = File.Create(saveFileDialog.FileName))
-                    {
-                        encoder.Save(fs);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error saving image: {ex.Message}", "Error",
-                        MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+                lastImagePath = saveFileDialog.FileName;
+                SaveImageAndStrokes(saveFileDialog.FileName);
             }
         }
 
         public void Save()
         {
-            if (CurrentImage?.Source is not BitmapImage bitmapImage || string.IsNullOrEmpty(bitmapImage.UriSource?.LocalPath)) return;
+            if (string.IsNullOrEmpty(lastImagePath))
+            {
+                SaveAs();
+                return;
+            }
+            SaveImageAndStrokes(lastImagePath);
+        }
+
+        private void SaveImageAndStrokes(string imagePath)
+        {
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+            if (inkCanvas == null) return;
 
             try
             {
-                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-                if (inkCanvas == null) return;
-
-                var renderBitmap = new RenderTargetBitmap(
-                    (int)inkCanvas.ActualWidth,
-                    (int)inkCanvas.ActualHeight,
-                    96, 96, PixelFormats.Pbgra32);
-                renderBitmap.Render(inkCanvas);
-
-                BitmapEncoder encoder = bitmapImage.UriSource.LocalPath.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ?
-                    new PngBitmapEncoder() : new JpegBitmapEncoder();
-                encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
-
-                using (var fs = File.Create(bitmapImage.UriSource.LocalPath))
+                using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
                 {
-                    encoder.Save(fs);
+                    inkCanvas.Strokes.Save(fs);
+                }
+
+                if (CurrentImage?.Source is BitmapSource bitmapSource)
+                {
+                    BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
+                        ? new PngBitmapEncoder()
+                        : new JpegBitmapEncoder();
+
+                    encoder.Frames.Add(BitmapFrame.Create((BitmapSource)CurrentImage.Source));
+                    using (var fs = new FileStream(imagePath, FileMode.Create))
+                    {
+                        encoder.Save(fs);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error saving image: {ex.Message}", "Error",
-                    MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        private string GetStrokesPath()
+        {
+            return Path.ChangeExtension(lastImagePath, ".isf");
         }
 
         public void ClearAll()
         {
             var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            inkCanvas.Strokes.Clear();
+            if (inkCanvas != null) inkCanvas.Strokes.Clear();
         }
     }
 }
