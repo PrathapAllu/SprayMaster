@@ -1,10 +1,7 @@
 ﻿using PropertyChanged;
 using SprayMaster.Helpers;
-using SprayMaster.Models;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Ink;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Threading;
@@ -14,77 +11,65 @@ namespace SprayMaster.Services
     [AddINotifyPropertyChangedInterface]
     public class SprayCanService
     {
-        private readonly InkCanvas inkCanvas;
-        private readonly double sprayRadius;
-        private readonly int particlesPerSecond;
+        private InkCanvas inkCanvas;
+        private readonly ToolManager toolManager;
         private readonly DispatcherTimer sprayTimer;
-        private readonly Random random;
-        private readonly DrawingAttributes sprayAttributes;
-        private bool IsMousePressed = false;
+        private readonly Random random = new();
+        private bool IsMousePressed;
         private Point sprayCenter;
 
-        public SprayCanService(double sprayRadius, DrawingAttributes sprayAttributes)
+        public SprayCanService(ToolManager toolManager)
         {
-            //TODO:Inject MainWindow via DI instead of accessing like this
-            var window = Application.Current.MainWindow as MainWindow;
-            this.inkCanvas = window?.canvasPanel;
-            window.CanvasMouseEvent += OnCanvasMouseEvent;
-            this.inkCanvas = inkCanvas;
-            this.sprayRadius = sprayRadius;
-            this.particlesPerSecond = (int)(100000 * sprayRadius);
-            this.random = new Random();
-            this.sprayAttributes = sprayAttributes;
-
+            this.toolManager = toolManager;
             this.sprayTimer = new DispatcherTimer();
             this.sprayTimer.Tick += SprayTimer_Tick;
         }
 
-        private void OnCanvasMouseEvent(object sender, CanvasMouseEventArgs e)
+        public void Initialize(InkCanvas canvas)
+        {
+            inkCanvas = canvas;
+        }
+
+        public void OnCanvasMouseEvent(object sender, CanvasMouseEventArgs e)
         {
             IsMousePressed = e.IsPressed;
             sprayCenter = e.Position;
+        }
 
-            if (!e.IsPressed)
-                inkCanvas.Cursor = Cursors.Arrow;
+        private void SprayTimer_Tick(object sender, EventArgs e)
+        {
+            if (!IsMousePressed || !toolManager.isSprayCanActive) return;
+
+            for (int i = 0; i < 5; i++)
+            {
+                double angle = random.NextDouble() * 2 * Math.PI;
+                double distance = Math.Sqrt(random.NextDouble()) * toolManager.BrushSize;
+                double particleX = sprayCenter.X + distance * Math.Cos(angle);
+                double particleY = sprayCenter.Y + distance * Math.Sin(angle);
+
+                Ellipse ellipse = new()
+                {
+                    Width = toolManager.DrawingAttributes.Width,
+                    Height = toolManager.DrawingAttributes.Height,
+                    Fill = new SolidColorBrush(toolManager.SelectedColor),
+                    Opacity = toolManager.SelectedColor.A / 255.0,
+                };
+
+                InkCanvas.SetLeft(ellipse, particleX - toolManager.DrawingAttributes.Width / 2);
+                InkCanvas.SetTop(ellipse, particleY - toolManager.DrawingAttributes.Height / 2);
+                inkCanvas.Children.Add(ellipse);
+            }
         }
 
         public void StartSpraying()
         {
-            sprayTimer.Interval = TimeSpan.FromSeconds(1.0 / particlesPerSecond);
+            sprayTimer.Interval = TimeSpan.FromSeconds(1.0 / (100000 * toolManager.BrushSize));
             sprayTimer.Start();
         }
 
         public void StopSpraying()
         {
             sprayTimer.Stop();
-        }
-
-        private void SprayTimer_Tick(object sender, EventArgs e)
-        {
-            if (IsMousePressed)
-            {
-                for (int i = 0; i < 5; i++)
-                {
-                    double angle = random.NextDouble() * 2 * Math.PI;
-                    double distance = Math.Sqrt(random.NextDouble()) * sprayRadius;
-
-                    double particleX = sprayCenter.X + distance * Math.Cos(angle);
-                    double particleY = sprayCenter.Y + distance * Math.Sin(angle);
-
-                    Ellipse ellipse = new Ellipse
-                    {
-                        Width = sprayAttributes.Width,
-                        Height = sprayAttributes.Height,
-                        Fill = new SolidColorBrush(sprayAttributes.Color),
-                        Opacity = sprayAttributes.Color.A / 255.0,
-                    };
-
-                    InkCanvas.SetLeft(ellipse, particleX - sprayAttributes.Width / 2);
-                    InkCanvas.SetTop(ellipse, particleY - sprayAttributes.Height / 2);
-
-                    inkCanvas.Children.Add(ellipse);
-                }
-            }
         }
     }
 }

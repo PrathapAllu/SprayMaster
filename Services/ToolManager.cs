@@ -60,14 +60,14 @@ namespace SprayMaster.Services
         public void UseEraser(bool use)
         {
             var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            var sliderValue = (Application.Current.MainWindow as MainWindow)?.sldEraserSize;
+            var sliderValue = 2;
             isUseEraser = use;
             if (inkCanvas != null)
             {
                 if (isUseEraser)
                 {
                     inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-                    inkCanvas.EraserShape = new EllipseStylusShape(sliderValue.Value, sliderValue.Value);
+                    inkCanvas.EraserShape = new EllipseStylusShape(2,2);
                 }
                 else
                 {
