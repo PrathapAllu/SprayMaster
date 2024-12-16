@@ -16,9 +16,9 @@ namespace SprayMaster.ViewModels
         public ICommand SaveImageAsCommand { get; private set; }
         public ICommand SaveImageCommand { get; private set; }
         public ICommand ClearAllCommand { get; private set; }
-        public ICommand SaveStrokeDataCommand { get; set; }
         public ICommand ActivateSprayCommand { get; set; }
         public ICommand UseEraserCommand { get; set; }
+        public ICommand UnavailableCommand { get; set; }
 
         public ToolManager toolManager { get; set; }
         public ImageService imageService { get; set; }
@@ -54,7 +54,7 @@ namespace SprayMaster.ViewModels
                 toolManager.UseEraser(toolManager.isUseEraser);
 
             });
-            SaveStrokeDataCommand = new RelayCommand(SaveStrokesData);
+            UnavailableCommand = new RelayCommand(DefaultSystemsMessages);
         }
 
         public void SaveStrokesData()
@@ -74,6 +74,11 @@ namespace SprayMaster.ViewModels
             {
                 MessageBox.Show($"Error saving strokes: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+
+        public void DefaultSystemsMessages()
+        {
+            MessageBox.Show("This feature is currently unavailable.", "System Message");
         }
     }
 }
