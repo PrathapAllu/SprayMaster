@@ -4,6 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace SprayMaster.Services
@@ -72,21 +73,6 @@ namespace SprayMaster.Services
             }
         }
 
-        public void SaveAs()
-        {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
-            {
-                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
-                DefaultExt = ".jpg"
-            };
-
-            if (saveFileDialog.ShowDialog() == true)
-            {
-                lastImagePath = saveFileDialog.FileName;
-                SaveImageAndStrokes(saveFileDialog.FileName);
-            }
-        }
-
         public void Save()
         {
             if (string.IsNullOrEmpty(lastImagePath))
@@ -125,6 +111,49 @@ namespace SprayMaster.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        public void SaveAs()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog
+            {
+                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
+                DefaultExt = ".jpg"
+            };
+
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                lastImagePath = saveFileDialog.FileName;
+                SaveAsImageAndStrokes(saveFileDialog.FileName);
+            }
+        }
+
+        private void SaveAsImageAndStrokes(string imagePath)
+        {
+            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+            if (inkCanvas == null) return;
+
+            using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
+            {
+                inkCanvas.Strokes.Save(fs);
+            }
+
+            RenderTargetBitmap rtb = new RenderTargetBitmap(
+                (int)inkCanvas.ActualWidth,
+                (int)inkCanvas.ActualHeight,
+                96, 96,
+                PixelFormats.Default);
+            rtb.Render(inkCanvas);
+
+            BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
+                ? new PngBitmapEncoder()
+                : new JpegBitmapEncoder();
+
+            encoder.Frames.Add(BitmapFrame.Create(rtb));
+            using (var fs = new FileStream(imagePath, FileMode.Create))
+            {
+                encoder.Save(fs);
             }
         }
 
