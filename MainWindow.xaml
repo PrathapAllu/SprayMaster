@@ -84,7 +84,10 @@
                             <DropShadowEffect Color="Black" BlurRadius="15" Opacity="0.15" ShadowDepth="2"/>
                         </Grid.Effect>
                         <InkCanvas x:Name="canvasPanel" Background="White" 
-                  DefaultDrawingAttributes="{Binding toolManager.DrawingAttributes}">
+                                   MouseDown="InkCanvas_MouseDown"
+                                   MouseMove="InkCanvas_MouseMove" 
+                                   MouseUp="InkCanvas_MouseUp"
+           DefaultDrawingAttributes="{Binding toolManager.DrawingAttributes}">
                             <InkCanvas.Children>
                                 <ContentControl Content="{Binding imageService.CurrentImage}"/>
                             </InkCanvas.Children>

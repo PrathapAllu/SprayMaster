@@ -1,4 +1,5 @@
-﻿using SprayMaster.ViewModels;
+﻿using SprayMaster.Helpers;
+using SprayMaster.ViewModels;
 using System.Windows;
 using System.Windows.Input;
 
@@ -10,6 +11,7 @@ namespace SprayMaster
     public partial class MainWindow : Window
     {
         private readonly MainViewModel viewModel;
+        public event EventHandler<CanvasMouseEventArgs> CanvasMouseEvent;
 
         public MainWindow()
         {
@@ -19,8 +21,38 @@ namespace SprayMaster
             DataContext = viewModel;
         }
 
-        #region control bar functions
-        private void panelControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void InkCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            CanvasMouseEvent?.Invoke(this, new CanvasMouseEventArgs
+            {
+                Position = e.GetPosition(canvasPanel),
+                IsPressed = true
+            });
+        }
+
+        private void InkCanvas_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                CanvasMouseEvent?.Invoke(this, new CanvasMouseEventArgs
+                {
+                    Position = e.GetPosition(canvasPanel),
+                    IsPressed = true
+                });
+            }
+        }
+
+        private void InkCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            CanvasMouseEvent?.Invoke(this, new CanvasMouseEventArgs
+            {
+                Position = e.GetPosition(canvasPanel),
+                IsPressed = false
+            });
+        }  
+
+    #region control bar functions
+    private void panelControlBar_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             DragMove();
         }
