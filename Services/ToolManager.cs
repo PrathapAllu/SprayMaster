@@ -10,6 +10,7 @@ namespace SprayMaster.Services
     [AddINotifyPropertyChangedInterface]
     public class ToolManager
     {
+        private InkCanvas inkCanvas;
         public DrawingAttributes DrawingAttributes { get; } = new();
         public Color SelectedColor
         {
@@ -23,8 +24,10 @@ namespace SprayMaster.Services
             get => DrawingAttributes.Width;
             set => DrawingAttributes.Width = DrawingAttributes.Height = value;
         }
+        public double EraserSize { get; set; } = 5;
         public ToolType CurrentTool { get; set; }
-        public bool isSprayCanActive = false;
+        public bool isSprayCanActive { get; set; } = false;
+        public bool isPenActive { get; set; } = false;
         public bool isUseEraser = false;
 
         public ToolManager()
@@ -51,23 +54,26 @@ namespace SprayMaster.Services
             SelectedBrush = new SolidColorBrush(SelectedColor);
         }
 
+        public void Initialize(InkCanvas canvas)
+        {
+            inkCanvas = canvas;
+        }
+
         public void SprayCan()
         {
             CurrentTool = ToolType.Spray;
             DrawingAttributes.IgnorePressure = true;
         }
 
-        public void UseEraser(bool use)
+        public void UseEraser()
         {
             var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            var sliderValue = 2;
-            isUseEraser = use;
             if (inkCanvas != null)
             {
                 if (isUseEraser)
                 {
                     inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-                    inkCanvas.EraserShape = new EllipseStylusShape(2,2);
+                    inkCanvas.EraserShape = new EllipseStylusShape(EraserSize, EraserSize);
                 }
                 else
                 {

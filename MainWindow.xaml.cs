@@ -18,6 +18,11 @@ namespace SprayMaster
         {
             InitializeComponent();
             DataContext = mainViewModel;
+
+            if (!(mainViewModel.toolManager.isSprayCanActive && mainViewModel.toolManager.isPenActive))
+            {
+                canvasPanel.EditingMode = InkCanvasEditingMode.None;
+            }
         }
 
         #region control bar and mouse moments

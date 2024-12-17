@@ -47,11 +47,13 @@ namespace SprayMaster
             services.AddSingleton<MainWindow>(provider => {
                 var viewModel = provider.GetRequiredService<MainViewModel>();
                 var sprayService = provider.GetRequiredService<SprayCanService>();
+                var toolService = provider.GetRequiredService<ToolManager>();
                 var window = new MainWindow(viewModel);
 
                 // Initialize services after window creation
                 viewModel.Initialize(window.canvasPanel);
                 sprayService.Initialize(window.canvasPanel);
+                toolService.Initialize(window.canvasPanel);
                 window.CanvasMouseEvent += sprayService.OnCanvasMouseEvent;
 
                 return window;

@@ -46,7 +46,6 @@ namespace SprayMaster.ViewModels
             ClearAllCommand = new RelayCommand(imageService.ClearAll);
 
             ActivateSprayCommand = new RelayCommand(() => {
-                toolManager.isSprayCanActive = !toolManager.isSprayCanActive;
                 if (toolManager.CurrentTool == ToolType.Spray && toolManager.isSprayCanActive)
                 {
                     sprayCanService.StartSpraying();
@@ -61,8 +60,7 @@ namespace SprayMaster.ViewModels
             });
 
             UseEraserCommand = new RelayCommand(() => {
-                toolManager.isUseEraser = !toolManager.isUseEraser;
-                toolManager.UseEraser(toolManager.isUseEraser);
+                toolManager.UseEraser();
             });
 
             UnavailableCommand = new RelayCommand(DefaultSystemsMessages);
