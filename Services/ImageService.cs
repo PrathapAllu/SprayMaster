@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using PropertyChanged;
+using SprayMaster.Interfaces;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;

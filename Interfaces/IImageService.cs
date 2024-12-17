@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace SprayMaster.Services
+namespace SprayMaster.Interfaces
 {
     public interface IImageService
     {

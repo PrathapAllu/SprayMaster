@@ -1,5 +1,6 @@
 ﻿using PropertyChanged;
 using SprayMaster.Helpers;
+using SprayMaster.Interfaces;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Ink;
@@ -10,7 +11,7 @@ using System.Windows.Threading;
 namespace SprayMaster.Services
 {
     [AddINotifyPropertyChangedInterface]
-    public class SprayCanService
+    public class SprayCanService : ISprayCanService
     {
         private InkCanvas inkCanvas;
         private readonly ToolManager toolManager;
