@@ -53,7 +53,6 @@ namespace SprayMaster
                 // Initialize services after window creation
                 viewModel.Initialize(window.canvasPanel);
                 sprayService.Initialize(window.canvasPanel);
-                toolService.Initialize(window.canvasPanel);
                 window.CanvasMouseEvent += sprayService.OnCanvasMouseEvent;
 
                 return window;

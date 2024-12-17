@@ -19,7 +19,7 @@ namespace SprayMaster
             InitializeComponent();
             DataContext = mainViewModel;
 
-            if (!(mainViewModel.toolManager.isSprayCanActive && mainViewModel.toolManager.isPenActive))
+            if (!(mainViewModel.sprayCanService.isSprayCanActive && mainViewModel.toolManager.isPenActive))
             {
                 canvasPanel.EditingMode = InkCanvasEditingMode.None;
             }

@@ -10,25 +10,25 @@ namespace SprayMaster.Services
     [AddINotifyPropertyChangedInterface]
     public class ToolManager
     {
-        private InkCanvas inkCanvas;
         public DrawingAttributes DrawingAttributes { get; } = new();
-        public Color SelectedColor
-        {
-            get => DrawingAttributes.Color;
-            set => DrawingAttributes.Color = value;
-        }
-        public SolidColorBrush SelectedBrush { get; set; }
-        public List<Color> Colors { get; set; }
-        public double BrushSize
-        {
-            get => DrawingAttributes.Width;
-            set => DrawingAttributes.Width = DrawingAttributes.Height = value;
-        }
         public double EraserSize { get; set; } = 5;
         public ToolType CurrentTool { get; set; }
         public bool isSprayCanActive { get; set; } = false;
         public bool isPenActive { get; set; } = false;
         public bool isUseEraser = false;
+        public SolidColorBrush SelectedBrush { get; set; }
+        public List<Color> Colors { get; set; }
+        public Color SelectedColor
+        {
+            get => DrawingAttributes.Color;
+            set => DrawingAttributes.Color = value;
+        }
+
+        public double BrushSize
+        {
+            get => DrawingAttributes.Width;
+            set => DrawingAttributes.Width = DrawingAttributes.Height = value;
+        }
 
         public ToolManager()
         {
@@ -54,32 +54,13 @@ namespace SprayMaster.Services
             SelectedBrush = new SolidColorBrush(SelectedColor);
         }
 
-        public void Initialize(InkCanvas canvas)
-        {
-            inkCanvas = canvas;
-        }
-
         public void SprayCan()
         {
+            isSprayCanActive = !isSprayCanActive;
+            isPenActive = false;
+            isUseEraser = false;
             CurrentTool = ToolType.Spray;
             DrawingAttributes.IgnorePressure = true;
-        }
-
-        public void UseEraser()
-        {
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            if (inkCanvas != null)
-            {
-                if (isUseEraser)
-                {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.EraseByPoint;
-                    inkCanvas.EraserShape = new EllipseStylusShape(EraserSize, EraserSize);
-                }
-                else
-                {
-                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
-                }
-            }
         }
     }
 }

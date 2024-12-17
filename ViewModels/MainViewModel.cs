@@ -22,6 +22,8 @@ namespace SprayMaster.ViewModels
         public ICommand SaveImageCommand { get; private set; }
         public ICommand ClearAllCommand { get; private set; }
         public ICommand ActivateSprayCommand { get; set; }
+        public ICommand ActivatePenCommand { get; set; }
+
         public ICommand UseEraserCommand { get; set; }
         public ICommand UnavailableCommand { get; set; }
 
@@ -46,26 +48,57 @@ namespace SprayMaster.ViewModels
             ClearAllCommand = new RelayCommand(imageService.ClearAll);
 
             ActivateSprayCommand = new RelayCommand(() => {
-                if (toolManager.CurrentTool == ToolType.Spray && toolManager.isSprayCanActive)
+                if (toolManager.CurrentTool == ToolType.Spray && sprayCanService.isSprayCanActive)
                 {
+                    toolManager.isPenActive = false;
+                    toolManager.isUseEraser = false;
                     sprayCanService.StartSpraying();
                     inkCanvas.EditingMode = InkCanvasEditingMode.None;
                     toolManager.SprayCan();
+
                 }
                 else
                 {
                     sprayCanService.StopSpraying();
-                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                    inkCanvas.EditingMode = InkCanvasEditingMode.None;
                 }
             });
 
+            ActivatePenCommand = new RelayCommand(TogglePen);
             UseEraserCommand = new RelayCommand(() => {
-                toolManager.UseEraser();
+                toolManager.isUseEraser = !toolManager.isUseEraser;
+                sprayCanService.isSprayCanActive = false;
+                toolManager.isPenActive = false;
+                if (toolManager.isUseEraser)
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.None;
+                }
+                else
+                {
+                    inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+                }
             });
 
             UnavailableCommand = new RelayCommand(DefaultSystemsMessages);
         }
 
+        private void TogglePen()
+        {
+            if (toolManager.isPenActive)
+            {
+                toolManager.isUseEraser = false;
+                sprayCanService.isSprayCanActive = false;
+                inkCanvas.EditingMode = InkCanvasEditingMode.Ink;
+            }
+            else
+            {
+                inkCanvas.EditingMode = InkCanvasEditingMode.None;
+            }
+
+            
+        }
+
+        [Obsolete("For Later Feature")]
         public void SaveStrokesData()
         {
             var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
