@@ -1,7 +1,6 @@
 ﻿using SprayMaster.Helpers;
 using SprayMaster.ViewModels;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SprayMaster
@@ -17,12 +16,6 @@ namespace SprayMaster
         public MainWindow()
         {
             InitializeComponent();
-
-
-            //if (!(mainViewModel.sprayCanService.isSprayCanActive && mainViewModel.toolManager.isPenActive))
-            //{
-            //    canvasPanel.EditingMode = InkCanvasEditingMode.None;
-            //}
         }
 
         #region control bar and mouse moments
