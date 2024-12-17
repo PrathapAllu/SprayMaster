@@ -24,9 +24,7 @@ A WPF-based image editing application that allows users to add spray paint effec
 - .NET 8.0
 - Windows OS
 - Dependencies:
-  - Microsoft.Extensions.DependencyInjection
-  - PropertyChanged.Fody
-  - Fody
+  - None
 
 ## Future Features
 - Dark/Light mode themes
