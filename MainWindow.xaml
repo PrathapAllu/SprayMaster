@@ -97,10 +97,8 @@
                 </Border>
 
                 <!-- Tools Panel -->
-                <!-- Tools Panel -->
                 <StackPanel Grid.Column="1" Background="WhiteSmoke">
                     <views:ToolsView DataContext="{Binding}"/>
-                    <views:ColorPickerView DataContext="{Binding}"/>
                 </StackPanel>
             </Grid>
 
@@ -126,6 +124,7 @@
                     <TextBlock Text="Status: Ready"/>
                 </StatusBarItem>
             </StatusBar>
+            
         </Grid>
     </Border>
 </Window>

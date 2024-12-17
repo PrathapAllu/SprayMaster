@@ -13,11 +13,11 @@ namespace SprayMaster
     {
         private readonly MainViewModel viewModel;
         public event EventHandler<CanvasMouseEventArgs> CanvasMouseEvent;
+
         public MainWindow(MainViewModel mainViewModel)
         {
             InitializeComponent();
             DataContext = mainViewModel;
-            canvasPanel.EditingMode = InkCanvasEditingMode.Ink;
         }
 
         #region control bar and mouse moments

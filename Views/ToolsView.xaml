@@ -30,6 +30,27 @@
                                  Margin="5"/>
                     </StackPanel>
                 </GroupBox>
+
+                <GroupBox Header="Color" Margin="5" BorderBrush="Black">
+                    <StackPanel>
+                        <ComboBox ItemsSource="{Binding toolManager.Colors}" 
+                      SelectedValue="{Binding toolManager.SelectedColor}">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Rectangle Width="20" Height="20">
+                                            <Rectangle.Fill>
+                                                <SolidColorBrush Color="{Binding}"/>
+                                            </Rectangle.Fill>
+                                        </Rectangle>
+                                        <TextBlock Text="{Binding}" Margin="5,0,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+                </GroupBox>
+
             </StackPanel>
         </GroupBox>
     </Grid>
