@@ -15,7 +15,7 @@ namespace SprayMaster.Services
         public ToolType CurrentTool { get; set; }
         public bool isSprayCanActive { get; set; } = false;
         public bool isPenActive { get; set; } = false;
-        public bool isUseEraser = false;
+        public bool isUseEraser { get; set; } = false;
         public SolidColorBrush SelectedBrush { get; set; }
         public List<Color> Colors { get; set; }
         public Color SelectedColor

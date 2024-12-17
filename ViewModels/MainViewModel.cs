@@ -66,7 +66,6 @@ namespace SprayMaster.ViewModels
 
             ActivatePenCommand = new RelayCommand(TogglePen);
             UseEraserCommand = new RelayCommand(() => {
-                toolManager.isUseEraser = !toolManager.isUseEraser;
                 sprayCanService.isSprayCanActive = false;
                 toolManager.isPenActive = false;
                 if (toolManager.isUseEraser)
