@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35431.28
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SprayMaster", "SprayMaster.csproj", "{09AA09B2-165E-4EEE-B620-29DB333AB775}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SprayMaster.Tests", "..\SprayMasterApp.Tests\SprayMaster.Tests.csproj", "{8D069E36-2C39-4F3A-8B56-A6EB9EC2C146}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SprayMaster.Tests", "..\SprayMaster.Tests\SprayMaster.Tests.csproj", "{E9276899-5CAE-4D30-A657-B1F550CC9E9D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{09AA09B2-165E-4EEE-B620-29DB333AB775}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{09AA09B2-165E-4EEE-B620-29DB333AB775}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{09AA09B2-165E-4EEE-B620-29DB333AB775}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8D069E36-2C39-4F3A-8B56-A6EB9EC2C146}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8D069E36-2C39-4F3A-8B56-A6EB9EC2C146}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8D069E36-2C39-4F3A-8B56-A6EB9EC2C146}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8D069E36-2C39-4F3A-8B56-A6EB9EC2C146}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E9276899-5CAE-4D30-A657-B1F550CC9E9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E9276899-5CAE-4D30-A657-B1F550CC9E9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E9276899-5CAE-4D30-A657-B1F550CC9E9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E9276899-5CAE-4D30-A657-B1F550CC9E9D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
