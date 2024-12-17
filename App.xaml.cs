@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using SprayMaster.Services;
+﻿using SprayMaster.Services;
 using SprayMaster.ViewModels;
 using System.Windows;
 
@@ -7,17 +6,23 @@ namespace SprayMaster
 {
     public partial class App : Application
     {
-        private ServiceProvider serviceProvider;
-
         protected override void OnStartup(StartupEventArgs e)
         {
-            var services = new ServiceCollection();
-            ConfigureServices(services);
-            serviceProvider = services.BuildServiceProvider();
-
             try
             {
-                var window = serviceProvider.GetRequiredService<MainWindow>();
+                var toolManager = new ToolManager();
+                var imageService = new ImageService();
+                var sprayService = new SprayCanService(toolManager);
+
+                var mainViewModel = new MainViewModel(toolManager, imageService, sprayService);
+
+                var window = new MainWindow();
+                window.DataContext = mainViewModel;
+
+                mainViewModel.Initialize(window.canvasPanel);
+                sprayService.Initialize(window.canvasPanel);
+                window.CanvasMouseEvent += sprayService.OnCanvasMouseEvent;
+
                 window.Show();
             }
             catch (Exception ex)
@@ -26,44 +31,6 @@ namespace SprayMaster
                     MessageBoxButton.OK, MessageBoxImage.Error);
                 Shutdown();
             }
-        }
-
-        private void ConfigureServices(ServiceCollection services)
-        {
-            // Register services
-            services.AddSingleton<ToolManager>();
-            services.AddSingleton<ImageService>();
-            services.AddSingleton<SprayCanService>();
-
-            // Create MainViewModel
-            services.AddSingleton<MainViewModel>(provider => {
-                var toolManager = provider.GetRequiredService<ToolManager>();
-                var imageService = provider.GetRequiredService<ImageService>();
-                var sprayService = provider.GetRequiredService<SprayCanService>();
-                return new MainViewModel(toolManager, imageService, sprayService);
-            });
-
-            // Register MainWindow last
-            services.AddSingleton<MainWindow>(provider => {
-                var viewModel = provider.GetRequiredService<MainViewModel>();
-                var sprayService = provider.GetRequiredService<SprayCanService>();
-                var toolService = provider.GetRequiredService<ToolManager>();
-                var window = new MainWindow();
-                window.DataContext = viewModel;
-
-                // Initialize services after window creation
-                viewModel.Initialize(window.canvasPanel);
-                sprayService.Initialize(window.canvasPanel);
-                window.CanvasMouseEvent += sprayService.OnCanvasMouseEvent;
-
-                return window;
-            });
-        }
-
-        protected override void OnExit(ExitEventArgs e)
-        {
-            serviceProvider?.Dispose();
-            base.OnExit(e);
         }
     }
 }

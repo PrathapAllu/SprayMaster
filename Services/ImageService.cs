@@ -1,6 +1,6 @@
 ﻿using Microsoft.Win32;
-using PropertyChanged;
 using SprayMaster.Interfaces;
+using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,15 +12,81 @@ using System.Xml.Linq;
 
 namespace SprayMaster.Services
 {
-    [AddINotifyPropertyChangedInterface]
-    public class ImageService : IImageService
+    public class ImageService : IImageService, INotifyPropertyChanged
     {
-        public double ImageWidth { get; set; }
-        public double ImageHeight { get; set; }
-        public string ImageName { get; set; } = "None";
-        public string ImageFormat { get; set; }
-        public Image CurrentImage { get; set; }
-        private string lastImagePath;
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        private double _imageWidth;
+        private double _imageHeight;
+        private string _imageName = "None";
+        private string? _imageFormat;
+        private Image? _currentImage;
+        private string? _lastImagePath;
+
+        public double ImageWidth
+        {
+            get => _imageWidth;
+            set
+            {
+                if (_imageWidth != value)
+                {
+                    _imageWidth = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageWidth)));
+                }
+            }
+        }
+
+        public double ImageHeight
+        {
+            get => _imageHeight;
+            set
+            {
+                if (_imageHeight != value)
+                {
+                    _imageHeight = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageHeight)));
+                }
+            }
+        }
+
+        public string ImageName
+        {
+            get => _imageName;
+            set
+            {
+                if (_imageName != value)
+                {
+                    _imageName = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageName)));
+                }
+            }
+        }
+
+        public string ImageFormat
+        {
+            get => _imageFormat;
+            set
+            {
+                if (_imageFormat != value)
+                {
+                    _imageFormat = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ImageFormat)));
+                }
+            }
+        }
+
+        public Image CurrentImage
+        {
+            get => _currentImage;
+            set
+            {
+                if (_currentImage != value)
+                {
+                    _currentImage = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(CurrentImage)));
+                }
+            }
+        }
 
         public void LoadImage()
         {
@@ -42,7 +108,7 @@ namespace SprayMaster.Services
 
                     var img = new Image { Source = bitmap };
                     CurrentImage = img;
-                    lastImagePath = openFileDialog.FileName;
+                    _lastImagePath = openFileDialog.FileName;
 
                     ImageWidth = bitmap.Width;
                     ImageHeight = bitmap.Height;
@@ -116,12 +182,12 @@ namespace SprayMaster.Services
 
         public void Save()
         {
-            if (string.IsNullOrEmpty(lastImagePath))
+            if (string.IsNullOrEmpty(_lastImagePath))
             {
                 SaveAs();
                 return;
             }
-            SaveImageAndStrokes(lastImagePath, false);
+            SaveImageAndStrokes(_lastImagePath, false);
             MessageBox.Show("Edit Saved Successfully");
         }
 
@@ -239,12 +305,12 @@ namespace SprayMaster.Services
 
         private string GetStrokesPath()
         {
-            return System.IO.Path.ChangeExtension(lastImagePath, ".isf");
+            return System.IO.Path.ChangeExtension(_lastImagePath, ".isf");
         }
 
         private string GetSprayPath()
         {
-            return System.IO.Path.ChangeExtension(lastImagePath, ".spray");
+            return System.IO.Path.ChangeExtension(_lastImagePath, ".spray");
         }
 
         public void ClearAll()

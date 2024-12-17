@@ -1,5 +1,4 @@
-﻿using PropertyChanged;
-using SprayMaster.Helpers;
+﻿using SprayMaster.Helpers;
 using SprayMaster.Services;
 using System.IO;
 using System.Windows;
@@ -9,7 +8,6 @@ using static SprayMaster.Models.Tool;
 
 namespace SprayMaster.ViewModels
 {
-    [AddINotifyPropertyChangedInterface]
     public class MainViewModel
     {
         private InkCanvas inkCanvas;

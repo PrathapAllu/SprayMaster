@@ -1,11 +1,9 @@
-﻿using PropertyChanged;
-using System.Windows.Ink;
+﻿using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
 
 namespace SprayMaster.Services
 {
-    [AddINotifyPropertyChangedInterface]
     public class ToolManager
     {
         public DrawingAttributes DrawingAttributes { get; } = new();
