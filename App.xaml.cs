@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using SprayMaster.Services;
 using SprayMaster.ViewModels;
-using System;
 using System.Windows;
 
 namespace SprayMaster
@@ -12,8 +11,6 @@ namespace SprayMaster
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            base.OnStartup(e);
-
             var services = new ServiceCollection();
             ConfigureServices(services);
             serviceProvider = services.BuildServiceProvider();
