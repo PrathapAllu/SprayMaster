@@ -7,6 +7,8 @@ using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace SprayMaster.Services
 {
@@ -44,12 +46,13 @@ namespace SprayMaster.Services
 
                     ImageWidth = bitmap.Width;
                     ImageHeight = bitmap.Height;
-                    ImageName = Path.GetFileName(openFileDialog.FileName);
-                    ImageFormat = Path.GetExtension(openFileDialog.FileName).TrimStart('.');
+                    ImageName = System.IO.Path.GetFileName(openFileDialog.FileName);
+                    ImageFormat = System.IO.Path.GetExtension(openFileDialog.FileName).TrimStart('.');
 
                     inkCanvas?.Children.Clear();
                     inkCanvas?.Children.Add(CurrentImage);
                     LoadAssociatedStrokes();
+                    LoadSprayData();
                 }
             }
             catch (IOException ex)
@@ -81,19 +84,48 @@ namespace SprayMaster.Services
             }
         }
 
+        private void LoadSprayData()
+        {
+            try
+            {
+                var sprayPath = GetSprayPath();
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                if (inkCanvas == null || !File.Exists(sprayPath)) return;
+
+                var sprayXml = XDocument.Load(sprayPath);
+                foreach (var ellipseElement in sprayXml.Root.Elements("Ellipse"))
+                {
+                    var ellipse = new Ellipse
+                    {
+                        Width = double.Parse(ellipseElement.Attribute("Width").Value),
+                        Height = double.Parse(ellipseElement.Attribute("Height").Value),
+                        Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(ellipseElement.Attribute("Fill").Value)),
+                        Opacity = double.Parse(ellipseElement.Attribute("Opacity").Value)
+                    };
+
+                    InkCanvas.SetLeft(ellipse, double.Parse(ellipseElement.Attribute("Left").Value));
+                    InkCanvas.SetTop(ellipse, double.Parse(ellipseElement.Attribute("Top").Value));
+                    inkCanvas.Children.Add(ellipse);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading spray data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
         public void Save()
         {
-
             if (string.IsNullOrEmpty(lastImagePath))
             {
                 SaveAs();
                 return;
             }
-            SaveImageAndStrokes(lastImagePath);
+            SaveImageAndStrokes(lastImagePath, false);
             MessageBox.Show("Edit Saved Successfully");
         }
 
-        private void SaveImageAndStrokes(string imagePath)
+        private void SaveImageAndStrokes(string imagePath, bool renderSprayToImage)
         {
             try
             {
@@ -105,16 +137,40 @@ namespace SprayMaster.Services
                     inkCanvas.Strokes.Save(fs);
                 }
 
-                if (CurrentImage?.Source is BitmapSource bitmapSource)
+                if (renderSprayToImage)
                 {
-                    BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
+                    RenderTargetBitmap rtb = new RenderTargetBitmap(
+                        (int)inkCanvas.ActualWidth,
+                        (int)inkCanvas.ActualHeight,
+                        96, 96,
+                        PixelFormats.Default);
+                    rtb.Render(inkCanvas);
+
+                    BitmapEncoder encoder = System.IO.Path.GetExtension(imagePath).ToLower() == ".png"
                         ? new PngBitmapEncoder()
                         : new JpegBitmapEncoder();
 
-                    encoder.Frames.Add(BitmapFrame.Create((BitmapSource)CurrentImage.Source));
+                    encoder.Frames.Add(BitmapFrame.Create(rtb));
                     using (var fs = new FileStream(imagePath, FileMode.Create))
                     {
                         encoder.Save(fs);
+                    }
+                }
+                else
+                {
+                    SaveSprayData(inkCanvas);
+
+                    if (CurrentImage?.Source is BitmapSource bitmapSource)
+                    {
+                        BitmapEncoder encoder = System.IO.Path.GetExtension(imagePath).ToLower() == ".png"
+                            ? new PngBitmapEncoder()
+                            : new JpegBitmapEncoder();
+
+                        encoder.Frames.Add(BitmapFrame.Create((BitmapSource)CurrentImage.Source));
+                        using (var fs = new FileStream(imagePath, FileMode.Create))
+                        {
+                            encoder.Save(fs);
+                        }
                     }
                 }
             }
@@ -125,6 +181,37 @@ namespace SprayMaster.Services
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SaveSprayData(InkCanvas inkCanvas)
+        {
+            try
+            {
+                var sprayElements = inkCanvas.Children
+                    .OfType<Ellipse>()
+                    .ToList();
+
+                var sprayXml = new XDocument(
+                    new XElement("SprayData",
+                        sprayElements.Select(ellipse =>
+                            new XElement("Ellipse",
+                                new XAttribute("Width", ellipse.Width),
+                                new XAttribute("Height", ellipse.Height),
+                                new XAttribute("Fill", ((SolidColorBrush)ellipse.Fill).Color.ToString()),
+                                new XAttribute("Opacity", ellipse.Opacity),
+                                new XAttribute("Left", InkCanvas.GetLeft(ellipse)),
+                                new XAttribute("Top", InkCanvas.GetTop(ellipse))
+                            )
+                        )
+                    )
+                );
+
+                sprayXml.Save(GetSprayPath());
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving spray data: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -140,8 +227,7 @@ namespace SprayMaster.Services
 
                 if (saveFileDialog.ShowDialog() == true)
                 {
-                    lastImagePath = saveFileDialog.FileName;
-                    SaveImageAndStrokes(saveFileDialog.FileName);
+                    SaveImageAndStrokes(saveFileDialog.FileName, true);
                     MessageBox.Show("Edit Saved Successfully");
                 }
             }
@@ -151,48 +237,14 @@ namespace SprayMaster.Services
             }
         }
 
-        private void SaveAsImageAndStrokes(string imagePath)
-        {
-            try
-            {
-                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-                if (inkCanvas == null) return;
-
-                using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
-                {
-                    inkCanvas.Strokes.Save(fs);
-                }
-
-                RenderTargetBitmap rtb = new RenderTargetBitmap(
-                    (int)inkCanvas.ActualWidth,
-                    (int)inkCanvas.ActualHeight,
-                    96, 96,
-                    PixelFormats.Default);
-                rtb.Render(inkCanvas);
-
-                BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
-                    ? new PngBitmapEncoder()
-                    : new JpegBitmapEncoder();
-
-                encoder.Frames.Add(BitmapFrame.Create(rtb));
-                using (var fs = new FileStream(imagePath, FileMode.Create))
-                {
-                    encoder.Save(fs);
-                }
-            }
-            catch (IOException ex)
-            {
-                MessageBox.Show($"File access error: {ex.Message}", "IO Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-        }
-
         private string GetStrokesPath()
         {
-            return Path.ChangeExtension(lastImagePath, ".isf");
+            return System.IO.Path.ChangeExtension(lastImagePath, ".isf");
+        }
+
+        private string GetSprayPath()
+        {
+            return System.IO.Path.ChangeExtension(lastImagePath, ".spray");
         }
 
         public void ClearAll()
@@ -202,6 +254,10 @@ namespace SprayMaster.Services
             {
                 inkCanvas.Strokes.Clear();
                 inkCanvas.Children.Clear();
+                if (CurrentImage != null)
+                {
+                    inkCanvas.Children.Add(CurrentImage);
+                }
             }
         }
     }
