@@ -22,15 +22,15 @@ namespace SprayMaster.Services
 
         public void LoadImage()
         {
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            OpenFileDialog openFileDialog = new OpenFileDialog
+            try
             {
-                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
-            };
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                OpenFileDialog openFileDialog = new OpenFileDialog
+                {
+                    Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp;*.gif|All files (*.*)|*.*"
+                };
 
-            if (openFileDialog.ShowDialog() == true)
-            {
-                try
+                if (openFileDialog.ShowDialog() == true)
                 {
                     var bitmap = new BitmapImage();
                     bitmap.BeginInit();
@@ -51,21 +51,25 @@ namespace SprayMaster.Services
                     inkCanvas?.Children.Add(CurrentImage);
                     LoadAssociatedStrokes();
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
+            }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"File access error: {ex.Message}", "IO Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void LoadAssociatedStrokes()
         {
-            var strokesPath = GetStrokesPath();
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            if (inkCanvas == null || !File.Exists(strokesPath)) return;
-
             try
             {
+                var strokesPath = GetStrokesPath();
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                if (inkCanvas == null || !File.Exists(strokesPath)) return;
+
                 using (var fs = new FileStream(strokesPath, FileMode.Open))
                 {
                     inkCanvas.Strokes = new StrokeCollection(fs);
@@ -79,21 +83,23 @@ namespace SprayMaster.Services
 
         public void Save()
         {
+
             if (string.IsNullOrEmpty(lastImagePath))
             {
                 SaveAs();
                 return;
             }
             SaveImageAndStrokes(lastImagePath);
+            MessageBox.Show("Edit Saved Successfully");
         }
 
         private void SaveImageAndStrokes(string imagePath)
         {
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            if (inkCanvas == null) return;
-
             try
             {
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                if (inkCanvas == null) return;
+
                 using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
                 {
                     inkCanvas.Strokes.Save(fs);
@@ -112,6 +118,10 @@ namespace SprayMaster.Services
                     }
                 }
             }
+            catch (IOException ex)
+            {
+                MessageBox.Show($"File access error: {ex.Message}", "IO Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -120,44 +130,63 @@ namespace SprayMaster.Services
 
         public void SaveAs()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog
+            try
             {
-                Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
-                DefaultExt = ".jpg"
-            };
+                SaveFileDialog saveFileDialog = new SaveFileDialog
+                {
+                    Filter = "JPEG files (*.jpg)|*.jpg|PNG files (*.png)|*.png|Bitmap files (*.bmp)|*.bmp|All files (*.*)|*.*",
+                    DefaultExt = ".jpg"
+                };
 
-            if (saveFileDialog.ShowDialog() == true)
+                if (saveFileDialog.ShowDialog() == true)
+                {
+                    lastImagePath = saveFileDialog.FileName;
+                    SaveImageAndStrokes(saveFileDialog.FileName);
+                    MessageBox.Show("Edit Saved Successfully");
+                }
+            }
+            catch (Exception ex)
             {
-                lastImagePath = saveFileDialog.FileName;
-                SaveAsImageAndStrokes(saveFileDialog.FileName);
+                MessageBox.Show($"Error in save dialog: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
         private void SaveAsImageAndStrokes(string imagePath)
         {
-            var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
-            if (inkCanvas == null) return;
-
-            using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
+            try
             {
-                inkCanvas.Strokes.Save(fs);
+                var inkCanvas = (Application.Current.MainWindow as MainWindow)?.canvasPanel;
+                if (inkCanvas == null) return;
+
+                using (var fs = new FileStream(GetStrokesPath(), FileMode.Create))
+                {
+                    inkCanvas.Strokes.Save(fs);
+                }
+
+                RenderTargetBitmap rtb = new RenderTargetBitmap(
+                    (int)inkCanvas.ActualWidth,
+                    (int)inkCanvas.ActualHeight,
+                    96, 96,
+                    PixelFormats.Default);
+                rtb.Render(inkCanvas);
+
+                BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
+                    ? new PngBitmapEncoder()
+                    : new JpegBitmapEncoder();
+
+                encoder.Frames.Add(BitmapFrame.Create(rtb));
+                using (var fs = new FileStream(imagePath, FileMode.Create))
+                {
+                    encoder.Save(fs);
+                }
             }
-
-            RenderTargetBitmap rtb = new RenderTargetBitmap(
-                (int)inkCanvas.ActualWidth,
-                (int)inkCanvas.ActualHeight,
-                96, 96,
-                PixelFormats.Default);
-            rtb.Render(inkCanvas);
-
-            BitmapEncoder encoder = Path.GetExtension(imagePath).ToLower() == ".png"
-                ? new PngBitmapEncoder()
-                : new JpegBitmapEncoder();
-
-            encoder.Frames.Add(BitmapFrame.Create(rtb));
-            using (var fs = new FileStream(imagePath, FileMode.Create))
+            catch (IOException ex)
             {
-                encoder.Save(fs);
+                MessageBox.Show($"File access error: {ex.Message}", "IO Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error saving: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -173,7 +202,6 @@ namespace SprayMaster.Services
             {
                 inkCanvas.Strokes.Clear();
                 inkCanvas.Children.Clear();
-
             }
         }
     }

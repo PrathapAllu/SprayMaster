@@ -14,15 +14,15 @@ namespace SprayMaster
         private readonly MainViewModel viewModel;
         public event EventHandler<CanvasMouseEventArgs> CanvasMouseEvent;
 
-        public MainWindow(MainViewModel mainViewModel)
+        public MainWindow()
         {
             InitializeComponent();
-            DataContext = mainViewModel;
 
-            if (!(mainViewModel.sprayCanService.isSprayCanActive && mainViewModel.toolManager.isPenActive))
-            {
-                canvasPanel.EditingMode = InkCanvasEditingMode.None;
-            }
+
+            //if (!(mainViewModel.sprayCanService.isSprayCanActive && mainViewModel.toolManager.isPenActive))
+            //{
+            //    canvasPanel.EditingMode = InkCanvasEditingMode.None;
+            //}
         }
 
         #region control bar and mouse moments

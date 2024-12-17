@@ -1,6 +1,4 @@
 ﻿using PropertyChanged;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Ink;
 using System.Windows.Media;
 using static SprayMaster.Models.Tool;
@@ -23,11 +21,10 @@ namespace SprayMaster.Services
             get => DrawingAttributes.Color;
             set => DrawingAttributes.Color = value;
         }
-
         public double BrushSize
         {
             get => DrawingAttributes.Width;
-            set => DrawingAttributes.Width = DrawingAttributes.Height = value;
+            set => DrawingAttributes.Width = value;
         }
 
         public ToolManager()

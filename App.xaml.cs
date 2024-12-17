@@ -48,7 +48,8 @@ namespace SprayMaster
                 var viewModel = provider.GetRequiredService<MainViewModel>();
                 var sprayService = provider.GetRequiredService<SprayCanService>();
                 var toolService = provider.GetRequiredService<ToolManager>();
-                var window = new MainWindow(viewModel);
+                var window = new MainWindow();
+                window.DataContext = viewModel;
 
                 // Initialize services after window creation
                 viewModel.Initialize(window.canvasPanel);
